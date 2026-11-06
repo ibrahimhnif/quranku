@@ -1,0 +1,1300 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-06T07:11:19.553955+00:00",
+  "title": "Design System: Quranku",
+  "extensions": {
+    "colorMeta": {
+      "white-page": {
+        "role": "neutral",
+        "displayName": "White Page",
+        "canonical": "#FFFFFF",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#A5A5A5",
+          "#C9C9C9",
+          "#EEEEEE"
+        ]
+      },
+      "white-desk": {
+        "role": "neutral",
+        "displayName": "White Desk",
+        "canonical": "#EEF0F0",
+        "tonalRamp": [
+          "#0A0B0B",
+          "#242525",
+          "#414242",
+          "#606161",
+          "#818383",
+          "#A3A5A5",
+          "#C7C9C9",
+          "#EDEFEF"
+        ]
+      },
+      "white-surface": {
+        "role": "neutral",
+        "displayName": "White Surface",
+        "canonical": "#F6F7F7",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#242525",
+          "#414242",
+          "#606161",
+          "#818282",
+          "#A4A5A5",
+          "#C8C9C9",
+          "#EEEFEF"
+        ]
+      },
+      "white-hover": {
+        "role": "neutral",
+        "displayName": "White Hover",
+        "canonical": "#EAECEC",
+        "tonalRamp": [
+          "#0A0B0B",
+          "#242525",
+          "#414242",
+          "#606262",
+          "#818383",
+          "#A3A5A5",
+          "#C7C9C9",
+          "#EDEFEF"
+        ]
+      },
+      "white-border": {
+        "role": "neutral",
+        "displayName": "White Border",
+        "canonical": "#E1E4E4",
+        "tonalRamp": [
+          "#0A0C0C",
+          "#232626",
+          "#404242",
+          "#5F6262",
+          "#808383",
+          "#A3A6A6",
+          "#C7CACA",
+          "#ECEFEF"
+        ]
+      },
+      "white-text": {
+        "role": "neutral",
+        "displayName": "White Text",
+        "canonical": "#1B1D1E",
+        "tonalRamp": [
+          "#0A0B0C",
+          "#232526",
+          "#404243",
+          "#5F6263",
+          "#808384",
+          "#A3A5A7",
+          "#C7CACB",
+          "#ECEFF0"
+        ]
+      },
+      "white-muted": {
+        "role": "neutral",
+        "displayName": "White Muted",
+        "canonical": "#6B7275",
+        "tonalRamp": [
+          "#070C0E",
+          "#202629",
+          "#3D4346",
+          "#5C6265",
+          "#7C8487",
+          "#9FA6AA",
+          "#C3CBCE",
+          "#E8F0F3"
+        ]
+      },
+      "white-accent": {
+        "role": "primary",
+        "displayName": "Mosque Teal",
+        "canonical": "#0F766E",
+        "tonalRamp": [
+          "#000F0D",
+          "#012C28",
+          "#094D47",
+          "#017169",
+          "#39938A",
+          "#5FB7AD",
+          "#84DCD2",
+          "#B9FEF6"
+        ]
+      },
+      "cream-page": {
+        "role": "neutral",
+        "displayName": "Cream Page",
+        "canonical": "#FBF5E6",
+        "tonalRamp": [
+          "#0F0B03",
+          "#292519",
+          "#464236",
+          "#666154",
+          "#878275",
+          "#AAA597",
+          "#CFC9BA",
+          "#F4EEDF"
+        ]
+      },
+      "cream-desk": {
+        "role": "neutral",
+        "displayName": "Cream Desk",
+        "canonical": "#EDE3CB",
+        "tonalRamp": [
+          "#110A00",
+          "#2C2411",
+          "#49412D",
+          "#69604C",
+          "#8B826C",
+          "#AEA48E",
+          "#D2C8B1",
+          "#F8EED6"
+        ]
+      },
+      "cream-surface": {
+        "role": "neutral",
+        "displayName": "Cream Surface",
+        "canonical": "#F4ECD8",
+        "tonalRamp": [
+          "#100A01",
+          "#2B2415",
+          "#484131",
+          "#68614F",
+          "#898270",
+          "#ACA592",
+          "#D0C9B5",
+          "#F6EEDA"
+        ]
+      },
+      "cream-hover": {
+        "role": "neutral",
+        "displayName": "Cream Hover",
+        "canonical": "#EADFC4",
+        "tonalRamp": [
+          "#120A00",
+          "#2D240E",
+          "#4A412A",
+          "#6A6049",
+          "#8C8269",
+          "#AFA48B",
+          "#D3C8AE",
+          "#F9EED2"
+        ]
+      },
+      "cream-border": {
+        "role": "neutral",
+        "displayName": "Cream Border",
+        "canonical": "#E0D3B3",
+        "tonalRamp": [
+          "#130900",
+          "#2E2408",
+          "#4C4125",
+          "#6C6044",
+          "#8D8164",
+          "#B1A485",
+          "#D5C8A8",
+          "#FBEECD"
+        ]
+      },
+      "cream-text": {
+        "role": "neutral",
+        "displayName": "Cream Text",
+        "canonical": "#2B2418",
+        "tonalRamp": [
+          "#100A02",
+          "#2B2418",
+          "#484134",
+          "#686052",
+          "#8A8173",
+          "#ADA495",
+          "#D1C8B8",
+          "#F7EDDD"
+        ]
+      },
+      "cream-muted": {
+        "role": "neutral",
+        "displayName": "Cream Muted",
+        "canonical": "#7A6A50",
+        "tonalRamp": [
+          "#140800",
+          "#30220A",
+          "#4E3F27",
+          "#6E5F45",
+          "#908065",
+          "#B4A387",
+          "#D8C7AA",
+          "#FEECCF"
+        ]
+      },
+      "cream-accent": {
+        "role": "primary",
+        "displayName": "Old Ink Brown",
+        "canonical": "#8A5A14",
+        "tonalRamp": [
+          "#170600",
+          "#371F00",
+          "#5D3900",
+          "#85550C",
+          "#A97737",
+          "#CE9A5B",
+          "#F4BE7E",
+          "#FEEBD5"
+        ]
+      },
+      "green-page": {
+        "role": "neutral",
+        "displayName": "Green Page",
+        "canonical": "#F1F7EF",
+        "tonalRamp": [
+          "#090C08",
+          "#222721",
+          "#3F443D",
+          "#5E635C",
+          "#7F847D",
+          "#A1A79F",
+          "#C5CBC3",
+          "#EBF1E9"
+        ]
+      },
+      "green-desk": {
+        "role": "neutral",
+        "displayName": "Green Desk",
+        "canonical": "#DCE9D8",
+        "tonalRamp": [
+          "#060E04",
+          "#1F281C",
+          "#3B4638",
+          "#5A6556",
+          "#7B8677",
+          "#9DA999",
+          "#C1CEBD",
+          "#E6F3E2"
+        ]
+      },
+      "green-surface": {
+        "role": "neutral",
+        "displayName": "Green Surface",
+        "canonical": "#E7F0E4",
+        "tonalRamp": [
+          "#070D06",
+          "#21271E",
+          "#3D443B",
+          "#5C645A",
+          "#7D857A",
+          "#A0A89D",
+          "#C3CCC1",
+          "#E9F2E6"
+        ]
+      },
+      "green-hover": {
+        "role": "neutral",
+        "displayName": "Green Hover",
+        "canonical": "#D8E6D3",
+        "tonalRamp": [
+          "#060E03",
+          "#1E291A",
+          "#3B4636",
+          "#596555",
+          "#7A8776",
+          "#9CAA98",
+          "#C0CEBB",
+          "#E5F4E0"
+        ]
+      },
+      "green-border": {
+        "role": "neutral",
+        "displayName": "Green Border",
+        "canonical": "#CBDCC5",
+        "tonalRamp": [
+          "#040E02",
+          "#1C2918",
+          "#394734",
+          "#586652",
+          "#788873",
+          "#9BAB95",
+          "#BECFB8",
+          "#E3F5DD"
+        ]
+      },
+      "green-text": {
+        "role": "neutral",
+        "displayName": "Green Text",
+        "canonical": "#1A2A1E",
+        "tonalRamp": [
+          "#020F05",
+          "#19291D",
+          "#36473A",
+          "#556759",
+          "#758879",
+          "#97AB9C",
+          "#BBCFBF",
+          "#E0F5E4"
+        ]
+      },
+      "green-muted": {
+        "role": "neutral",
+        "displayName": "Green Muted",
+        "canonical": "#5C705F",
+        "tonalRamp": [
+          "#020F04",
+          "#182A1C",
+          "#354738",
+          "#536756",
+          "#748977",
+          "#96AC99",
+          "#BAD0BD",
+          "#DFF6E2"
+        ]
+      },
+      "green-accent": {
+        "role": "primary",
+        "displayName": "Leaf Green",
+        "canonical": "#1F6F43",
+        "tonalRamp": [
+          "#001004",
+          "#002E15",
+          "#00502A",
+          "#237246",
+          "#499566",
+          "#6DB888",
+          "#91DEAB",
+          "#C7FED8"
+        ]
+      },
+      "night-page": {
+        "role": "neutral",
+        "displayName": "Night Page",
+        "canonical": "#16191D",
+        "tonalRamp": [
+          "#090B0F",
+          "#22252A",
+          "#3F4247",
+          "#5E6266",
+          "#7F8388",
+          "#A1A5AB",
+          "#C5C9CF",
+          "#EAEFF5"
+        ]
+      },
+      "night-desk": {
+        "role": "neutral",
+        "displayName": "Night Desk",
+        "canonical": "#0E1013",
+        "tonalRamp": [
+          "#090B0E",
+          "#232529",
+          "#404246",
+          "#5F6165",
+          "#808287",
+          "#A2A5A9",
+          "#C6C9CE",
+          "#ECEFF3"
+        ]
+      },
+      "night-surface": {
+        "role": "neutral",
+        "displayName": "Night Surface",
+        "canonical": "#1C2026",
+        "tonalRamp": [
+          "#080B11",
+          "#21252B",
+          "#3E4249",
+          "#5D6269",
+          "#7E838A",
+          "#A0A5AD",
+          "#C4CAD2",
+          "#E9EFF7"
+        ]
+      },
+      "night-hover": {
+        "role": "neutral",
+        "displayName": "Night Hover",
+        "canonical": "#262B32",
+        "tonalRamp": [
+          "#070B11",
+          "#21252C",
+          "#3D424A",
+          "#5C626A",
+          "#7D838B",
+          "#9FA6AE",
+          "#C3CAD3",
+          "#E8EFF9"
+        ]
+      },
+      "night-border": {
+        "role": "neutral",
+        "displayName": "Night Border",
+        "canonical": "#2C323A",
+        "tonalRamp": [
+          "#070B12",
+          "#20262D",
+          "#3C434B",
+          "#5B626B",
+          "#7C838C",
+          "#9EA6B0",
+          "#C2CAD4",
+          "#E7EFFA"
+        ]
+      },
+      "night-text": {
+        "role": "neutral",
+        "displayName": "Night Text",
+        "canonical": "#E8E6E3",
+        "tonalRamp": [
+          "#0C0B09",
+          "#262523",
+          "#43423F",
+          "#63615E",
+          "#84827F",
+          "#A7A5A2",
+          "#CBC9C6",
+          "#F0EEEB"
+        ]
+      },
+      "night-muted": {
+        "role": "neutral",
+        "displayName": "Night Muted",
+        "canonical": "#9AA0A6",
+        "tonalRamp": [
+          "#080C10",
+          "#21262A",
+          "#3D4348",
+          "#5C6267",
+          "#7D8389",
+          "#A0A6AC",
+          "#C4CAD0",
+          "#E9EFF6"
+        ]
+      },
+      "night-accent": {
+        "role": "primary",
+        "displayName": "Lamp Teal",
+        "canonical": "#2DD4BF",
+        "tonalRamp": [
+          "#00100C",
+          "#012C27",
+          "#0B4D44",
+          "#067165",
+          "#099787",
+          "#2EBDAA",
+          "#47E5CF",
+          "#BAFFF2"
+        ]
+      },
+      "auto-dark-accent-text": {
+        "role": "neutral",
+        "displayName": "Deep Teal Ink",
+        "canonical": "#062925",
+        "tonalRamp": [
+          "#000F0D",
+          "#082B27",
+          "#284944",
+          "#476964",
+          "#688B85",
+          "#8AAEA8",
+          "#ADD2CC",
+          "#D2F8F1"
+        ]
+      },
+      "accent-text-light": {
+        "role": "neutral",
+        "displayName": "Accent Ink Light",
+        "canonical": "#FFFFFF",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#A5A5A5",
+          "#C9C9C9",
+          "#EEEEEE"
+        ]
+      },
+      "accent-text-dark": {
+        "role": "neutral",
+        "displayName": "Accent Ink Dark",
+        "canonical": "#111111",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#A5A5A5",
+          "#C9C9C9",
+          "#EEEEEE"
+        ]
+      },
+      "tajweed-madd-natural": {
+        "role": "tertiary",
+        "displayName": "Tajweed Madd Natural",
+        "canonical": "#537FFF",
+        "tonalRamp": [
+          "#010036",
+          "#070279",
+          "#152CA8",
+          "#2E52CE",
+          "#4C77F6",
+          "#7CA1FF",
+          "#B2C9FC",
+          "#E8EFFE"
+        ]
+      },
+      "tajweed-madd-natural-dark": {
+        "role": "tertiary",
+        "displayName": "Tajweed Madd Natural Dark",
+        "canonical": "#7FA0FF",
+        "tonalRamp": [
+          "#020036",
+          "#0C1469",
+          "#23388D",
+          "#3F59B2",
+          "#5E7CD8",
+          "#7FA0FF",
+          "#B4C8FC",
+          "#E8EEFE"
+        ]
+      },
+      "tajweed-madd-permissible": {
+        "role": "tertiary",
+        "displayName": "Tajweed Madd Permissible",
+        "canonical": "#4050FF",
+        "tonalRamp": [
+          "#040038",
+          "#110474",
+          "#2316B8",
+          "#363EEE",
+          "#5772FB",
+          "#859FFA",
+          "#B5C7FE",
+          "#E9EEFE"
+        ]
+      },
+      "tajweed-madd-permissible-dark": {
+        "role": "tertiary",
+        "displayName": "Tajweed Madd Permissible Dark",
+        "canonical": "#8A96FF",
+        "tonalRamp": [
+          "#070034",
+          "#1B086C",
+          "#323190",
+          "#4E53B6",
+          "#6D76DC",
+          "#909CFA",
+          "#BBC5FE",
+          "#EAEEFE"
+        ]
+      },
+      "tajweed-madd-obligatory": {
+        "role": "tertiary",
+        "displayName": "Tajweed Madd Obligatory",
+        "canonical": "#2144C1",
+        "tonalRamp": [
+          "#010036",
+          "#06017A",
+          "#122BA9",
+          "#2B52D0",
+          "#4977F7",
+          "#7EA2F7",
+          "#B2C9FC",
+          "#E8EFFE"
+        ]
+      },
+      "tajweed-madd-obligatory-dark": {
+        "role": "tertiary",
+        "displayName": "Tajweed Madd Obligatory Dark",
+        "canonical": "#6C8CFF",
+        "tonalRamp": [
+          "#030035",
+          "#100077",
+          "#22309C",
+          "#3C54C2",
+          "#5A78E9",
+          "#829FFD",
+          "#B6C8FB",
+          "#E8EEFF"
+        ]
+      },
+      "tajweed-madd-necessary": {
+        "role": "tertiary",
+        "displayName": "Tajweed Madd Necessary",
+        "canonical": "#000EBC",
+        "tonalRamp": [
+          "#000036",
+          "#000479",
+          "#0017C0",
+          "#1349E8",
+          "#4378F7",
+          "#77A2FF",
+          "#B0C9FC",
+          "#E7EFFE"
+        ]
+      },
+      "tajweed-madd-necessary-dark": {
+        "role": "tertiary",
+        "displayName": "Tajweed Madd Necessary Dark",
+        "canonical": "#5A6BFF",
+        "tonalRamp": [
+          "#050036",
+          "#160770",
+          "#291AB2",
+          "#4047DA",
+          "#5F72F5",
+          "#889DFE",
+          "#B8C7FC",
+          "#E9EEFD"
+        ]
+      },
+      "tajweed-ghunnah": {
+        "role": "tertiary",
+        "displayName": "Tajweed Ghunnah",
+        "canonical": "#FF7E1E",
+        "tonalRamp": [
+          "#1D0200",
+          "#3F1800",
+          "#692F03",
+          "#954913",
+          "#C6631C",
+          "#FC7B19",
+          "#FDB790",
+          "#FFEADE"
+        ]
+      },
+      "tajweed-ghunnah-dark": {
+        "role": "tertiary",
+        "displayName": "Tajweed Ghunnah Dark",
+        "canonical": "#FF9A4D",
+        "tonalRamp": [
+          "#1B0400",
+          "#3C1B00",
+          "#653305",
+          "#944A00",
+          "#BF6920",
+          "#EC8839",
+          "#FCB88A",
+          "#FEEADD"
+        ]
+      },
+      "tajweed-ikhfa": {
+        "role": "tertiary",
+        "displayName": "Tajweed Ikhfa",
+        "canonical": "#9400A8",
+        "tonalRamp": [
+          "#19001E",
+          "#3E0247",
+          "#670F75",
+          "#980BAC",
+          "#BD41D2",
+          "#E468F9",
+          "#F2ABFE",
+          "#FBE7FE"
+        ]
+      },
+      "tajweed-ikhfa-dark": {
+        "role": "tertiary",
+        "displayName": "Tajweed Ikhfa Dark",
+        "canonical": "#D45AE6",
+        "tonalRamp": [
+          "#1A0020",
+          "#3E0346",
+          "#6B0079",
+          "#9810A9",
+          "#BD43CF",
+          "#E46AF6",
+          "#F2ABFC",
+          "#FBE7FE"
+        ]
+      },
+      "tajweed-idgham-ghunnah": {
+        "role": "tertiary",
+        "displayName": "Tajweed Idgham Ghunnah",
+        "canonical": "#169777",
+        "tonalRamp": [
+          "#001009",
+          "#002D21",
+          "#004F3C",
+          "#107259",
+          "#189878",
+          "#4BBC9A",
+          "#73E1BE",
+          "#C2FEE8"
+        ]
+      },
+      "tajweed-idgham-ghunnah-dark": {
+        "role": "tertiary",
+        "displayName": "Tajweed Idgham Ghunnah Dark",
+        "canonical": "#3CC9A2",
+        "tonalRamp": [
+          "#001009",
+          "#012D21",
+          "#0B4E3C",
+          "#057259",
+          "#079978",
+          "#2DBF99",
+          "#5EE5BC",
+          "#C0FEE8"
+        ]
+      },
+      "tajweed-idgham-no-ghunnah": {
+        "role": "tertiary",
+        "displayName": "Tajweed Idgham No Ghunnah",
+        "canonical": "#169200",
+        "tonalRamp": [
+          "#001100",
+          "#012F00",
+          "#085101",
+          "#1B7510",
+          "#279C18",
+          "#52C146",
+          "#79E76C",
+          "#CCFFC6"
+        ]
+      },
+      "tajweed-idgham-no-ghunnah-dark": {
+        "role": "tertiary",
+        "displayName": "Tajweed Idgham No Ghunnah Dark",
+        "canonical": "#4FCB35",
+        "tonalRamp": [
+          "#001100",
+          "#072E01",
+          "#17500A",
+          "#1F7507",
+          "#2C9C0B",
+          "#47C42B",
+          "#6FEA58",
+          "#CDFFC4"
+        ]
+      },
+      "tajweed-iqlab": {
+        "role": "tertiary",
+        "displayName": "Tajweed Iqlab",
+        "canonical": "#26BFFD",
+        "tonalRamp": [
+          "#000D18",
+          "#00293C",
+          "#004864",
+          "#0E6A8E",
+          "#168EBD",
+          "#03B3F1",
+          "#86D5FD",
+          "#DDF2FE"
+        ]
+      },
+      "tajweed-iqlab-dark": {
+        "role": "tertiary",
+        "displayName": "Tajweed Iqlab Dark",
+        "canonical": "#5CD0FF",
+        "tonalRamp": [
+          "#000E18",
+          "#002A39",
+          "#024960",
+          "#146B89",
+          "#1E8EB6",
+          "#3AB3E1",
+          "#7FD6FC",
+          "#DCF3FE"
+        ]
+      },
+      "tajweed-ikhfa-shafawi": {
+        "role": "tertiary",
+        "displayName": "Tajweed Ikhfa Shafawi",
+        "canonical": "#D500B7",
+        "tonalRamp": [
+          "#1E0017",
+          "#430239",
+          "#700D60",
+          "#A4098D",
+          "#D90FBB",
+          "#FA5ADB",
+          "#FDA9E8",
+          "#FFE6F7"
+        ]
+      },
+      "tajweed-ikhfa-shafawi-dark": {
+        "role": "tertiary",
+        "displayName": "Tajweed Ikhfa Shafawi Dark",
+        "canonical": "#F05CDA",
+        "tonalRamp": [
+          "#1C0018",
+          "#44003C",
+          "#710465",
+          "#A0188F",
+          "#CD38B9",
+          "#F561DE",
+          "#FEA7ED",
+          "#FEE6F8"
+        ]
+      },
+      "tajweed-idgham-shafawi": {
+        "role": "tertiary",
+        "displayName": "Tajweed Idgham Shafawi",
+        "canonical": "#58B800",
+        "tonalRamp": [
+          "#001000",
+          "#102D00",
+          "#234E03",
+          "#397213",
+          "#4E981D",
+          "#60C019",
+          "#85E64E",
+          "#D0FFBC"
+        ]
+      },
+      "tajweed-idgham-shafawi-dark": {
+        "role": "tertiary",
+        "displayName": "Tajweed Idgham Shafawi Dark",
+        "canonical": "#7FD936",
+        "tonalRamp": [
+          "#021000",
+          "#122D00",
+          "#264E00",
+          "#3C710B",
+          "#529712",
+          "#67BF00",
+          "#8BE546",
+          "#D2FEBA"
+        ]
+      },
+      "tajweed-qalqalah": {
+        "role": "tertiary",
+        "displayName": "Tajweed Qalqalah",
+        "canonical": "#DD0008",
+        "tonalRamp": [
+          "#220000",
+          "#4E0000",
+          "#800505",
+          "#B31A15",
+          "#ED251F",
+          "#FD7566",
+          "#FEB3A8",
+          "#FEE9E6"
+        ]
+      },
+      "tajweed-qalqalah-dark": {
+        "role": "tertiary",
+        "displayName": "Tajweed Qalqalah Dark",
+        "canonical": "#FF5A60",
+        "tonalRamp": [
+          "#210001",
+          "#4D000A",
+          "#7E091B",
+          "#B11E2E",
+          "#E13D48",
+          "#FA7676",
+          "#FDB3B0",
+          "#FFE9E7"
+        ]
+      },
+      "tajweed-idgham-mutajanisayn": {
+        "role": "tertiary",
+        "displayName": "Tajweed Idgham Mutajanisayn",
+        "canonical": "#A1A1A1",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#A5A5A5",
+          "#C9C9C9",
+          "#EEEEEE"
+        ]
+      },
+      "tajweed-idgham-mutajanisayn-dark": {
+        "role": "tertiary",
+        "displayName": "Tajweed Idgham Mutajanisayn Dark",
+        "canonical": "#8E8E8E",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#A5A5A5",
+          "#C9C9C9",
+          "#EEEEEE"
+        ]
+      },
+      "tajweed-silent": {
+        "role": "tertiary",
+        "displayName": "Tajweed Silent",
+        "canonical": "#AAAAAA",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#A5A5A5",
+          "#C9C9C9",
+          "#EEEEEE"
+        ]
+      },
+      "tajweed-silent-dark": {
+        "role": "tertiary",
+        "displayName": "Tajweed Silent Dark",
+        "canonical": "#7A7A7A",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#A5A5A5",
+          "#C9C9C9",
+          "#EEEEEE"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "wordmark": {
+        "displayName": "Wordmark",
+        "purpose": "Quranku with its Arabic name; onboarding welcome (40) and sidebar (19)."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Home greeting and onboarding step titles."
+      },
+      "section-title": {
+        "displayName": "Section title",
+        "purpose": "Top of Stats, Settings, Shuffle, Recitations."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Continue panel surah and verse reference."
+      },
+      "title-small": {
+        "displayName": "Small title",
+        "purpose": "Settings section headings, card titles."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "List rows, nav labels, strip items."
+      },
+      "body-small": {
+        "displayName": "Body small",
+        "purpose": "Setting labels, notes, rule summaries."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Muted metadata, counts, verse keys, page numbers."
+      },
+      "translation": {
+        "displayName": "Translation",
+        "purpose": "Under each verse, Muted; size 11-26 by the reader."
+      },
+      "quran-reading": {
+        "displayName": "Quran reading",
+        "purpose": "Verse text; size 24-52 and line height 1.5-3 by the reader."
+      },
+      "quran-continue": {
+        "displayName": "Quran continue",
+        "purpose": "The stopped verse in the continue panel, two lines at most."
+      },
+      "quran-surah-title": {
+        "displayName": "Surah title",
+        "purpose": "Surah header above verses, in accent."
+      },
+      "quran-surah-name": {
+        "displayName": "Surah name",
+        "purpose": "Arabic surah names in tiles and the picker."
+      }
+    },
+    "shadows": [
+      {
+        "name": "mushaf-page",
+        "value": "0 2px 14px rgba(0,0,0,0.10)",
+        "purpose": "The Mushaf page lying on the desk."
+      },
+      {
+        "name": "continue-panel",
+        "value": "0 6px 24px rgba(0,0,0,0.05)",
+        "purpose": "The faint lift of Home's continue panel."
+      },
+      {
+        "name": "rule-card",
+        "value": "0 8px 24px rgba(0,0,0,0.18)",
+        "purpose": "The tajweed rule card floating over text."
+      },
+      {
+        "name": "mushaf-frame-ring",
+        "value": "inset 0 0 0 3px {page}",
+        "purpose": "Page-colored ring inside the Mushaf's accent frame."
+      }
+    ],
+    "alphas": [
+      {
+        "name": "faded",
+        "value": 0.3,
+        "purpose": "Text around a hovered tajweed letter."
+      },
+      {
+        "name": "quiet",
+        "value": 0.38,
+        "purpose": "Verses not being recited on a Mushaf page."
+      },
+      {
+        "name": "selection-wash",
+        "value": "0.12-0.14",
+        "purpose": "Accent wash on the current nav item, row, reciter or translation."
+      },
+      {
+        "name": "playing-wash",
+        "value": 0.06,
+        "purpose": "Accent wash of the verse being recited; border at 0.45."
+      },
+      {
+        "name": "frame",
+        "value": 0.55,
+        "purpose": "Mushaf frame hairline; surah lozenge 0.7 line, 0.08 wash."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "window-min",
+        "value": "960x600"
+      },
+      {
+        "name": "window-default",
+        "value": "1320x880"
+      },
+      {
+        "name": "wide-content",
+        "value": "1100px content width: Settings two columns, Stats side by side"
+      },
+      {
+        "name": "index-column",
+        "value": "320px per index column, 2 to 4"
+      }
+    ],
+    "maxWidths": [
+      {
+        "name": "home",
+        "value": "1280px"
+      },
+      {
+        "name": "stats",
+        "value": "1280px"
+      },
+      {
+        "name": "settings",
+        "value": "1280px wide, 780px narrow"
+      },
+      {
+        "name": "shuffle",
+        "value": "960px"
+      },
+      {
+        "name": "verse-reading",
+        "value": "880px"
+      },
+      {
+        "name": "onboarding",
+        "value": "720px"
+      }
+    ],
+    "icons": {
+      "set": "Lucide",
+      "strokeWidth": 1.75
+    },
+    "customTheme": {
+      "inputs": [
+        "page",
+        "surface",
+        "text",
+        "accent"
+      ],
+      "desk": "surface mix text 0.08",
+      "hover": "surface mix text 0.07",
+      "border": "surface mix text 0.14",
+      "muted": "text mix page 0.42",
+      "dark": "page luminance < 0.5"
+    },
+    "keyboard": [
+      {
+        "key": "Esc",
+        "action": "Leave the reader for Home"
+      },
+      {
+        "key": "Left / Page Down",
+        "action": "Next Mushaf page"
+      },
+      {
+        "key": "Right / Page Up",
+        "action": "Previous Mushaf page"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one main act of a view, such as Continue, with a Lucide icon before the label.",
+      "html": "<button class=\"ds-btn-primary\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 7v14\"/><path d=\"M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z\"/></svg>Lanjutkan</button>",
+      "css": ".ds-btn-primary { display:inline-flex; align-items:center; gap:8px; background:#0F766E; color:#FFFFFF; border:none; border-radius:8px; padding:12px 20px; font:600 14px -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; cursor:pointer; } .ds-btn-primary:hover { background:#0F766E; filter:brightness(1.05); } .ds-btn-primary:focus-visible { outline:2px solid #0F766E; outline-offset:2px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "The alternate path beside a primary action.",
+      "html": "<button class=\"ds-btn-secondary\">Buka di mushaf</button>",
+      "css": ".ds-btn-secondary { background:#F6F7F7; color:#1B1D1E; border:1px solid #E1E4E4; border-radius:8px; padding:8px 14px; font:400 14px -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; cursor:pointer; } .ds-btn-secondary:hover { background:#EAECEC; } .ds-btn-secondary:focus-visible { outline:2px solid #0F766E; outline-offset:2px; }"
+    },
+    {
+      "name": "Sidebar Navigation",
+      "kind": "nav",
+      "refersTo": "sidebar",
+      "description": "Surface sidebar; the current item takes an accent wash with accent bold label.",
+      "html": "<nav class=\"ds-nav\"><div class=\"ds-nav-brand\">Quranku <span>قرآنكو</span></div><a class=\"ds-nav-item ds-current\">Hari ini</a><a class=\"ds-nav-item\">Baca</a><a class=\"ds-nav-item\">Acak ayat</a><a class=\"ds-nav-item\">Statistik</a></nav>",
+      "css": ".ds-nav { width:224px; padding:20px 14px; background:#F6F7F7; border-right:1px solid #E1E4E4; display:flex; flex-direction:column; gap:4px; font:14px -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; color:#1B1D1E; } .ds-nav-brand { font-weight:700; font-size:19px; padding:0 8px 18px; } .ds-nav-brand span { font-family:'Amiri Quran',serif; color:#6B7275; font-weight:400; } .ds-nav-item { padding:8px 10px; border-radius:8px; cursor:pointer; } .ds-nav-item:hover { background:#EAECEC; } .ds-nav-item.ds-current { background:rgba(15,118,110,0.13); color:#0F766E; font-weight:700; } .ds-nav-item:focus-visible { outline:2px solid #0F766E; }"
+    },
+    {
+      "name": "Search Field",
+      "kind": "input",
+      "refersTo": null,
+      "description": "Surah search beside the Surah / Juz switch.",
+      "html": "<input class=\"ds-search\" placeholder=\"Cari surah\">",
+      "css": ".ds-search { width:260px; padding:7px 12px; border:1px solid #E1E4E4; border-radius:8px; background:#FFFFFF; color:#1B1D1E; font:14px -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; } .ds-search::placeholder { color:#6B7275; } .ds-search:focus-visible { outline:2px solid #0F766E; outline-offset:1px; }"
+    },
+    {
+      "name": "Continue Panel",
+      "kind": "card",
+      "refersTo": "continue-panel",
+      "description": "Home's first block: where reading stopped, the verse in Arabic, today's goal, Continue.",
+      "html": "<div class=\"ds-continue\"><div class=\"ds-continue-main\"><div class=\"ds-t\">Al-Baqarah, ayat 255</div><div class=\"ds-m\">Sapi Betina · Juz 3 · Halaman 42</div><div class=\"ds-ar\">ٱللَّهُ لَآ إِلَٰهَ إِلَّا هُوَ ٱلْحَىُّ ٱلْقَيُّومُ</div><div class=\"ds-goal\"><div class=\"ds-bar\"><i></i></div><span>4 dari 10 ayat hari ini</span></div></div><button class=\"ds-go\">Lanjutkan</button></div>",
+      "css": ".ds-continue { display:flex; gap:32px; align-items:flex-end; padding:28px 28px 24px; background:#F6F7F7; border:1px solid #E1E4E4; border-radius:18px; box-shadow:0 6px 24px rgba(0,0,0,0.05); font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; color:#1B1D1E; } .ds-continue-main { flex:1; display:flex; flex-direction:column; gap:14px; } .ds-t { font-size:22px; font-weight:700; } .ds-m { font-size:13px; color:#6B7275; margin-top:-10px; } .ds-ar { font-family:'Amiri Quran','Scheherazade New',serif; font-size:30px; line-height:1.9; direction:rtl; text-align:right; } .ds-goal { display:flex; gap:12px; align-items:center; font-size:13px; color:#6B7275; } .ds-bar { width:220px; height:6px; border-radius:3px; background:#E1E4E4; overflow:hidden; } .ds-bar i { display:block; width:40%; height:100%; background:#0F766E; } .ds-go { width:210px; background:#0F766E; color:#fff; border:none; border-radius:8px; padding:12px 20px; font:600 14px -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; cursor:pointer; } .ds-go:hover { filter:brightness(1.05); } .ds-go:focus-visible { outline:2px solid #0F766E; outline-offset:2px; }"
+    },
+    {
+      "name": "Surah Tile",
+      "kind": "custom",
+      "refersTo": "surah-tile",
+      "description": "Index row: number disc, name and meta, Arabic name; fills only on hover; the current surah's disc is accent.",
+      "html": "<div class=\"ds-tile\"><span class=\"ds-num ds-cur\">2</span><div class=\"ds-txt\"><div>Al-Baqarah</div><small>Sapi Betina · 286 ayat</small></div><span class=\"ds-arn\">البقرة</span></div>",
+      "css": ".ds-tile { display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:10px; cursor:pointer; font:14px -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; color:#1B1D1E; width:300px; } .ds-tile:hover { background:#EAECEC; } .ds-tile:focus-visible { outline:2px solid #0F766E; } .ds-num { width:30px; height:30px; border-radius:15px; display:grid; place-items:center; font-size:12px; font-weight:700; background:#F6F7F7; color:#6B7275; font-variant-numeric:tabular-nums; } .ds-num.ds-cur { background:#0F766E; color:#fff; } .ds-txt { flex:1; } .ds-txt small { display:block; font-size:12px; color:#6B7275; } .ds-arn { font-family:'Amiri Quran',serif; font-size:19px; }"
+    },
+    {
+      "name": "Verse Card, Playing",
+      "kind": "card",
+      "refersTo": "verse-card-playing",
+      "description": "A verse while recited: accent wash and border, Now reciting pill; at rest verses only have a bottom hairline.",
+      "html": "<div class=\"ds-verse\"><div class=\"ds-vh\"><span class=\"ds-key\">1:2</span><span class=\"ds-pill\">Sedang dibaca</span></div><div class=\"ds-var\">ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَٰلَمِينَ ۝٢</div><div class=\"ds-tr\">Segala puji bagi Allah, Tuhan seluruh alam.</div></div>",
+      "css": ".ds-verse { padding:20px 16px; border-radius:14px; background:rgba(15,118,110,0.06); border:1px solid rgba(15,118,110,0.45); display:flex; flex-direction:column; gap:12px; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; max-width:880px; } .ds-vh { display:flex; gap:8px; align-items:center; } .ds-key { font-size:12px; font-weight:700; color:#6B7275; font-variant-numeric:tabular-nums; } .ds-pill { background:#0F766E; color:#fff; border-radius:999px; padding:3px 10px; font-size:11px; font-weight:700; } .ds-var { font-family:'Amiri Quran','Scheherazade New',serif; font-size:34px; line-height:2; direction:rtl; color:#1B1D1E; } .ds-tr { font-size:15px; line-height:1.6; color:#6B7275; }"
+    },
+    {
+      "name": "Tajweed Fading Emphasis",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "Hovering a rule's letters keeps them in full color and fades the verse around them to 0.3; never a box.",
+      "html": "<p class=\"ds-tj\"><span class=\"ds-rest\">مِن شَرِّ مَا خَلَقَ </span><span class=\"ds-rule\">قَ</span><span class=\"ds-rest\"> وَمِن شَرِّ غَاسِقٍ</span></p>",
+      "css": ".ds-tj { font-family:'Amiri Quran',serif; font-size:34px; line-height:2; direction:rtl; color:#1B1D1E; } .ds-rule { color:#DD0008; cursor:pointer; } .ds-tj:hover .ds-rest { color:rgba(27,29,30,0.3); } .ds-rule:focus-visible { outline:none; text-decoration:underline; }"
+    },
+    {
+      "name": "Theme Swatch",
+      "kind": "chip",
+      "refersTo": "theme-swatch",
+      "description": "A paper as a 36px circle with an accent dot; chosen gets a 3px accent ring.",
+      "html": "<div class=\"ds-sw\"><span class=\"ds-dot ds-on\" style=\"background:#FBF5E6\"><i style=\"background:#8A5A14\"></i></span><small>Krem</small></div>",
+      "css": ".ds-sw { width:64px; display:flex; flex-direction:column; align-items:center; gap:4px; font:11px -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; cursor:pointer; } .ds-dot { width:36px; height:36px; border-radius:18px; border:1px solid #E1E4E4; display:grid; place-items:center; box-sizing:border-box; } .ds-dot i { width:10px; height:10px; border-radius:5px; } .ds-dot.ds-on { border:3px solid #0F766E; } .ds-sw:hover .ds-dot { border-color:#6B7275; } .ds-on + small { color:#0F766E; font-weight:700; }"
+    },
+    {
+      "name": "Reader Bar with Progress Edge",
+      "kind": "nav",
+      "refersTo": "reader-progress-edge",
+      "description": "Back (Esc), surah title opening the picker, controls; today's goal as a 3px line on the bottom edge.",
+      "html": "<div class=\"ds-rb\"><div class=\"ds-rbrow\"><span class=\"ds-ib\">&#8592;</span><div class=\"ds-rt\"><b>2. Al-Baqarah</b><small>Sapi Betina · Juz 1 · 4 dari 10 ayat hari ini</small></div><span class=\"ds-sp\"></span><span class=\"ds-ib\">Aa</span></div><div class=\"ds-edge\"><i></i></div></div>",
+      "css": ".ds-rb { font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; color:#1B1D1E; background:#FFFFFF; } .ds-rbrow { display:flex; align-items:center; gap:12px; padding:8px 16px; } .ds-ib { padding:6px 10px; border-radius:8px; cursor:pointer; } .ds-ib:hover, .ds-rt:hover { background:#EAECEC; } .ds-rt { padding:6px 10px; border-radius:8px; cursor:pointer; } .ds-rt b { display:block; font-size:15px; } .ds-rt small { font-size:12px; color:#6B7275; } .ds-sp { flex:1; } .ds-edge { height:3px; background:#E1E4E4; } .ds-edge i { display:block; height:3px; width:40%; background:#0F766E; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Quiet Paper",
+    "overview": "Quranku is a sheet of paper on a desk. Each theme is a paper (White, Cream, Green, Night, or one the reader mixes), with one ink for text, one muted ink for everything secondary, and one accent. Nothing is drawn on the paper for its own sake: the Quran text, its ayah marks and its surah titles are the only ornament, and the chrome around them is flat, thin-lined and quiet. The app opens on today's reading (the verse where the reader stopped, in Arabic, at reading size) and reading itself is a full-window view entered with Continue and left with Esc.\n\nDensity is relaxed. Pages are centered columns with generous outer margins (36 top, 40 sides, 48 bottom) and a 28px rhythm between blocks; lists are airy rows that only show a fill on hover. Depth comes from stepping between the paper's tones (Page, Surface, Desk) and from 1px hairlines, not from shadows. Tajweed help, translation and recitation sit in the same quiet register as the chrome so they never compete with the text.\n\nThis is a native desktop UI drawn by MyGo in Go. There is no CSS: every value below lives in Go code (`themes.go`, `tajweed.go`, and the views). The theme radius is 8.",
+    "keyCharacteristics": [
+      "Paper themes with a fixed role set: Page, Desk, Surface, Hover, Border, Text, Muted, Accent.",
+      "One accent per paper, spent on the primary action, progress, the current selection and the text's own ornaments.",
+      "Emphasis by fading what surrounds, never by drawing boxes.",
+      "One platform sans for the UI; Amiri Quran (or Scheherazade New) for Arabic.",
+      "Lucide line icons at 1.75 stroke.",
+      "Flat surfaces, hairline borders, no gradients."
+    ],
+    "rules": [
+      {
+        "name": "The One Accent Rule",
+        "body": "Each paper has one accent. It marks the primary action (Continue, Begin, Next, the player's play button), progress (goal bars, the reader's edge line, juz progress, the 14-day chart), and current selection (nav item, picked surah, picked reciter, picked theme, selected choice card). The only other place it appears is the text's own ornament: ayah marks, surah titles in Arabic, the Mushaf frame and surah header lozenge. Selection is shown as an accent wash at 0.12-0.14 alpha with accent bold label text, never a solid accent block.",
+        "section": "colors"
+      },
+      {
+        "name": "The Accent Ink Rule",
+        "body": "Text on a solid accent is white (`accent-text-light`) unless the accent's luminance exceeds 0.6, then near-black (`accent-text-dark`). Auto's dark appearance uses `auto-dark-accent-text`.",
+        "section": "colors"
+      },
+      {
+        "name": "The Four Colors Rule",
+        "body": "A custom theme is four chosen colors (Page, Surface, Text, Accent); the rest are mixed, never chosen: Desk is Surface mixed 8% toward Text, Hover 7%, Border 14%, Muted is Text mixed 42% toward Page. A theme is dark when its Page luminance is under 0.5.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Sans Rule",
+        "body": "The UI uses the platform sans alone. Do not introduce a display face; weight and size carry the hierarchy.",
+        "section": "typography"
+      },
+      {
+        "name": "The Core Text Rule",
+        "body": "Arabic is set only in Amiri Quran or Scheherazade New. Faces whose marks Core Text drops (KFGQPC, Digital Khatt) are not used.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tabular Figures Rule",
+        "body": "Numbers that line up or tick (verse keys, surah numbers, page counts, slider values, stats) use `tnum`.",
+        "section": "typography"
+      },
+      {
+        "name": "The Centered Column Rule",
+        "body": "Section content sits in a centered column with a maximum width: Home, Stats and wide Settings 1280; Settings 780 when the content area is under 1100; Shuffle 960; onboarding 720; verse-by-verse reading 880 (with 32px side padding). The column has 36 / 40 / 48 outer padding and a 28px gap between blocks.",
+        "section": "layout"
+      },
+      {
+        "name": "The Flat Paper Rule",
+        "body": "Surfaces are flat paper with hairline edges. Separate by tone and line, not by lift; no gradients, no glass, no colored shadows.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Edge Progress Rule",
+        "body": "Today's goal progress runs as a 3px, square-ended line along the reader bar's bottom edge. The reader shows progress there and in the bar's subtitle, nowhere else.",
+        "section": "components"
+      },
+      {
+        "name": "The Esc Rule",
+        "body": "Esc leaves the reader for Home; the back button says so in its label. In the Mushaf, the left arrow and Page Down go to the next page (right to left, as the book reads).",
+        "section": "components"
+      },
+      {
+        "name": "The Fading Emphasis Rule",
+        "body": "Tajweed is taught by fading the surroundings, never by boxes, outlines or backgrounds behind letters. Hovering a colored letter keeps it at full color and fades the rest of that verse (or Mushaf page) to 0.3 alpha. While a verse plays on a Mushaf page, the other verses rest at 0.38. When the guide focuses one rule, other rules' letters lose their color and return to Text. The hover tooltip is the rule card: Page background, hairline, radius 10, 280 wide, a rule-color dot, name, Arabic name in the rule color, and a one-line summary.",
+        "section": "components"
+      }
+    ],
+    "dos": [
+      "Do take every color from the current paper's roles (Page, Desk, Surface, Hover, Border, Text, Muted, Accent) so all five built-in papers and every custom theme work unchanged.",
+      "Do keep the accent to the primary action, progress, current selection and the text's ornaments (ayah marks, surah titles, Mushaf frame).",
+      "Do show selection as an accent wash (0.12-0.14) with accent bold text.",
+      "Do emphasize a tajweed rule by fading its surroundings (0.3 on hover, 0.38 for quiet verses).",
+      "Do center section content in a column capped at its width (1280, 960, 880, 720) with 36 / 40 / 48 padding and a 28 gap.",
+      "Do name every icon-only button and give it a tooltip.",
+      "Do use tabular figures for numbers that align or change."
+    ],
+    "donts": [
+      "Don't put boxes, outlines or backgrounds around tajweed letters.",
+      "Don't use gradients, glass, or heavy and colored shadows; the three soft ambient shadows (Mushaf page, continue panel, rule card) are the whole vocabulary.",
+      "Don't add a second UI typeface or set the UI in a display face.",
+      "Don't set Arabic in fonts Core Text cannot mark correctly.",
+      "Don't spend the accent on headings, decoration or large fills.",
+      "Don't add chrome to the reader beyond back, surah, play, mode and Aa; tajweed and guide switches live in the Aa menu."
+    ]
+  }
+}

@@ -1,0 +1,23 @@
+# Builds
+/build/
+/.mygo/
+mygo_windows_*.syso
+/quranku
+/quaranku-app
+
+# Share cards saved while trying the app
+/quranku-*.png
+
+# Editors and systems
+.DS_Store
+*.swp
+.idea/
+.vscode/
+
+# Partial downloads and writes
+*.part
+*.tmp
+
+# Design tooling scratch
+.impeccable/questions/
+.impeccable/mocks/
