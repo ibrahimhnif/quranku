@@ -352,6 +352,7 @@ func (a *app) startVerse() {
 	}
 	pb.paused, pb.err = false, ""
 	a.followPlayback()
+	defer a.syncMedia()
 	if !a.rec.has(pb.reciter, pb.surah, pb.verse) {
 		if a.rec.dir == "" {
 			pb.err = "no place to keep recitations"
@@ -438,6 +439,7 @@ func (a *app) togglePause() {
 		pb.snd.Pause()
 	}
 	pb.paused = !pb.paused
+	a.syncMedia()
 }
 
 func (a *app) stopPlayback() {
@@ -446,6 +448,7 @@ func (a *app) stopPlayback() {
 	}
 	a.rec.play = nil
 	a.rec.gen++
+	a.syncMedia()
 }
 
 // followPlayback keeps the verse playing in view.

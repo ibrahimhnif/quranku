@@ -89,6 +89,7 @@ type app struct {
 	// post runs a function on the UI thread (Window.Update); now is the
 	// clock. Tests replace them.
 	post               func(func())
+	media              bool // the system's media controls show what plays
 	now                func() time.Time
 	apiBase, audioBase string
 }
@@ -659,6 +660,7 @@ func main() {
 			Content:   ui.View(a.view),
 		})
 		a.post = win.Update
+		a.listenMedia()
 		if runtime.GOOS == "darwin" {
 			// macOS's View menu would take ⌘+, ⌘− and ⌘0 for a zoom native
 			// UI does not do: Quranku's zooms the text instead.

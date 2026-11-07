@@ -25,7 +25,8 @@ follows along, and recaps worth sharing. Built in Go with
   in 15 lines justified with kashida. One page or two side by side.
 - **Recitation.** 12 reciters. Play from any verse; the verse recited is
   highlighted and followed, with repeat for memorization. Download surahs for
-  offline listening.
+  offline listening. What plays shows in the system's media controls, and
+  the media keys play, pause and skip verses.
 - **Make it yours.** Five paper themes and your own from four colors, two
   Quran fonts, text size and line spacing (⌘+ / ⌘− / ⌘0 while reading), and
   126 translations to choose from.
@@ -47,6 +48,21 @@ follows along, and recaps worth sharing. Built in Go with
 | Recap | Share cards |
 |---|---|
 | ![Recap](docs/screenshots/recap.png) | ![Recap card](docs/screenshots/card-recap.png) ![Verse card](docs/screenshots/card-verse.png) |
+
+## Download
+
+[Releases](https://github.com/ibrahimhnif/quranku/releases) have the app for
+macOS (`.dmg`, Apple silicon and Intel), Windows (installer, or a portable
+`.exe`) and Linux (AppImage, `.deb`, or a `.tar.gz` with `install.sh`).
+
+The builds are not signed yet. On macOS, open the app the first time with
+right-click → Open (or allow it in System Settings → Privacy & Security); on
+Windows, choose "More info" → "Run anyway" when SmartScreen warns. On Linux
+the app needs GTK 3, which desktops have.
+
+A release is made by bumping `version` in `mygo.json` and pushing its tag
+(`git tag v0.2.0 && git push origin v0.2.0`): the Release workflow builds
+every platform and publishes them.
 
 ## Build and run
 

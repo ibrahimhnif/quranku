@@ -2,5 +2,12 @@
   "name": "Quranku",
   "identifier": "io.github.ibrahimhnif.quranku",
   "version": "0.1.0",
-  "out": "build"
+  "out": "build",
+  "linux": {
+    "maintainer": "Ibrahim Hanif",
+    "comment": "Read the Quran every day, with tajweed colors",
+    "categories": ["Education"],
+    "webview": false,
+    "command": "quranku"
+  }
 }
