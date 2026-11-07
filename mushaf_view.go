@@ -90,7 +90,6 @@ func (a *app) mushafPage(c *ui.Context, p *Page) {
 	width := size * f.Width
 	lineH := size * float32(a.set.LineSpacing+0.05)
 	pad := size * 0.8
-	scope := fmt.Sprint("page", p.Number)
 	small := size * 0.55
 
 	ui.Column(c.Key(p.Number)).Padding(pad*0.6, pad, pad*0.6, pad).Gap(pad*0.4).Radius(6).
@@ -110,7 +109,7 @@ func (a *app) mushafPage(c *ui.Context, p *Page) {
 				InsetShadow(0, 0, 0, 3, a.pal.Page).
 				Children(func() {
 					for i := range p.Lines {
-						a.mushafLine(c, p, i, size, width, lineH, scope)
+						a.mushafLine(c, p, i, size, width, lineH)
 					}
 				})
 			ui.Text(c, arabicDigits(p.Number)).Font(quranFont).FontSize(small).TextColor(t.TextMuted).AlignSelf(ui.Center)
@@ -119,7 +118,7 @@ func (a *app) mushafPage(c *ui.Context, p *Page) {
 
 // mushafLine draws line i of a page: its words spread from edge to edge,
 // as the printed Mushaf sets them.
-func (a *app) mushafLine(c *ui.Context, p *Page, i int, size, width, lineH float32, scope string) {
+func (a *app) mushafLine(c *ui.Context, p *Page, i int, size, width, lineH float32) {
 	t := c.Theme()
 	f := quranFonts[a.set.Font]
 	l := &p.Lines[i]
@@ -139,7 +138,7 @@ func (a *app) mushafLine(c *ui.Context, p *Page, i int, size, width, lineH float
 	case LineBasmalah:
 		row.Justify(ui.Center).Children(func() {
 			ui.RichText(c).Font(f.Family).FontSize(size).NoWrap().Children(func() {
-				a.segmentsQuiet(c, a.quran.Basmalah, scope, a.recitedOn(p))
+				a.segmentsQuiet(c, a.quran.Basmalah, a.recitedOn(p))
 			})
 		})
 		return
@@ -167,12 +166,12 @@ func (a *app) mushafLine(c *ui.Context, p *Page, i int, size, width, lineH float
 	row.Children(func() {
 		for k, w := range l.Words {
 			if w.Word == EndMark {
-				a.ayahMarkQuiet(c, w.Verse.Number, scope, recited && !a.playing(w.Verse)).Font(f.Family).FontSize(fs).NoWrap()
+				a.ayahMarkQuiet(c, w.Verse.Number, recited && !a.playing(w.Verse)).Font(f.Family).FontSize(fs).NoWrap()
 				continue
 			}
 			// While a verse of the page is recited, the others fade.
 			ui.RichText(c).Font(f.Family).FontSize(fs).NoWrap().Children(func() {
-				a.segmentsQuiet(c, j.words[k], scope, recited && !a.playing(w.Verse))
+				a.segmentsQuiet(c, j.words[k], recited && !a.playing(w.Verse))
 			})
 		}
 	})

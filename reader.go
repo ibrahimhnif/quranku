@@ -6,10 +6,6 @@ import (
 	"github.com/egoist/mygo/ui"
 )
 
-// fadedAlpha is the opacity of the other letters of a verse, or a Mushaf
-// page, while the pointer is on a colored segment.
-const fadedAlpha = 0.3
-
 // reader shows the surah verse by verse.
 func (a *app) reader(c *ui.Context) {
 	s := a.surah
@@ -39,7 +35,7 @@ func (a *app) surahHeader(c *ui.Context, s *Surah) {
 		ui.Textf(c, "%s — %s", s.Name, a.tx(s.Meaning)).FontSize(14).TextColor(t.TextMuted)
 		if s.Bismillah {
 			ui.Box(c).Height(12)
-			a.arabic(c, a.quran.Basmalah, 0, fmt.Sprint("basmalah", s.ID)).TextAlign(ui.Center).AlignSelf(ui.Stretch)
+			a.arabic(c, a.quran.Basmalah, 0).TextAlign(ui.Center).AlignSelf(ui.Stretch)
 		}
 	})
 }
@@ -89,7 +85,7 @@ func (a *app) verse(c *ui.Context, v *Verse) {
 				ui.Icon(c, iconCheck).FontSize(13).TextColor(t.TextMuted).Tooltip(a.tx(txtVersesRead))
 			}
 		})
-		a.arabic(c, v.Segments, v.Number, v.Key)
+		a.arabic(c, v.Segments, v.Number)
 		if a.set.Translation {
 			ui.Text(c, a.translationText(v)).FontSize(float32(a.set.TransSize)).LineHeight(1.6).TextColor(t.TextMuted)
 		}
@@ -98,25 +94,22 @@ func (a *app) verse(c *ui.Context, v *Verse) {
 
 // arabic shows a verse's text in one paragraph. A verse number above zero
 // ends it with an ayah mark.
-func (a *app) arabic(c *ui.Context, segs []Segment, number int, scope string) ui.Element {
+func (a *app) arabic(c *ui.Context, segs []Segment, number int) ui.Element {
 	f := quranFonts[a.set.Font]
 	size := float32(a.set.Size) * f.Scale
 	return ui.RichText(c).Font(f.Family).FontSize(size).LineHeight(float32(a.set.LineSpacing)).TextAlign(ui.Start).Children(func() {
-		a.segments(c, segs, scope)
+		a.segments(c, segs)
 		if number > 0 {
 			ui.Text(c, " ")
-			a.ayahMark(c, number, scope)
+			a.ayahMark(c, number)
 		}
 	})
 }
 
 // segments builds a run of text inside a paragraph, each tajweed segment
 // colored, with its rule on hover, and studied when clicked.
-//
-// The pointer on a colored segment highlights its letters alone, without a
-// box: the rest of its scope (a verse, or a Mushaf page) fades.
-func (a *app) segments(c *ui.Context, segs []Segment, scope string) {
-	a.segmentsQuiet(c, segs, scope, false)
+func (a *app) segments(c *ui.Context, segs []Segment) {
+	a.segmentsQuiet(c, segs, false)
 }
 
 // quietAlpha is the opacity of the verses around the one recited.
@@ -124,13 +117,10 @@ const quietAlpha = 0.38
 
 // segmentsQuiet builds segments as segments does; quiet ones fade, as the
 // verses around the one recited do.
-func (a *app) segmentsQuiet(c *ui.Context, segs []Segment, scope string, quiet bool) {
+func (a *app) segmentsQuiet(c *ui.Context, segs []Segment, quiet bool) {
 	t := c.Theme()
 	alpha := float32(1)
-	switch {
-	case a.hoverScope == scope:
-		alpha = fadedAlpha
-	case quiet:
+	if quiet {
 		alpha = quietAlpha
 	}
 	for _, seg := range segs {
@@ -143,13 +133,7 @@ func (a *app) segmentsQuiet(c *ui.Context, segs []Segment, scope string, quiet b
 			continue
 		}
 		col := r.Color(t)
-		el.Cursor(ui.CursorPointer)
-		if el.Hovered() {
-			a.nextHover = scope
-			el.TextColor(col)
-		} else {
-			el.TextColor(col.Alpha(alpha))
-		}
+		el.Cursor(ui.CursorPointer).TextColor(col.Alpha(alpha))
 		if el.Clicked() {
 			a.focus = r
 			a.set.Guide = true
@@ -161,17 +145,14 @@ func (a *app) segmentsQuiet(c *ui.Context, segs []Segment, scope string, quiet b
 }
 
 // ayahMark builds the ornament with a verse's number.
-func (a *app) ayahMark(c *ui.Context, n int, scope string) ui.Element {
-	return a.ayahMarkQuiet(c, n, scope, false)
+func (a *app) ayahMark(c *ui.Context, n int) ui.Element {
+	return a.ayahMarkQuiet(c, n, false)
 }
 
-func (a *app) ayahMarkQuiet(c *ui.Context, n int, scope string, quiet bool) ui.Element {
+func (a *app) ayahMarkQuiet(c *ui.Context, n int, quiet bool) ui.Element {
 	t := c.Theme()
 	col := t.Accent
-	switch {
-	case a.hoverScope == scope:
-		col = col.Alpha(fadedAlpha)
-	case quiet:
+	if quiet {
 		col = col.Alpha(quietAlpha)
 	}
 	return ui.Text(c, ayahMark(n)).TextColor(col)

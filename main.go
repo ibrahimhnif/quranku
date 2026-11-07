@@ -82,10 +82,6 @@ type app struct {
 	trans *translations
 	rec   *recitation
 
-	// hoverScope is the verse or page whose colored segment the pointer
-	// is on: its other letters fade. nextHover collects it as a pass builds.
-	hoverScope, nextHover string
-
 	widths map[lineKey]float32    // natural widths of Mushaf lines, in ems
 	lines  map[lineKey]*justified // Mushaf lines set with kashidas
 	pal    palette
@@ -200,7 +196,6 @@ func (a *app) view(c *ui.Context) {
 	}
 	a.ensureTranslation()
 	a.pal = a.applyTheme(c)
-	a.nextHover = ""
 
 	if !a.set.Onboarded {
 		a.onboarding(c)
@@ -251,13 +246,8 @@ func (a *app) announce(c *ui.Context) {
 	a.newBadges = nil
 }
 
-// finishPass ends a pass: the hover fading, and the settings saved.
+// finishPass ends a pass: the settings saved.
 func (a *app) finishPass(c *ui.Context) {
-	// The fading of a verse or page follows the pointer one pass behind.
-	if a.nextHover != a.hoverScope {
-		a.hoverScope = a.nextHover
-		c.Invalidate()
-	}
 	a.save()
 }
 

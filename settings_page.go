@@ -109,9 +109,9 @@ func (a *app) settingsArabic(c *ui.Context) {
 		ui.RichText(c).Font(f.Family).FontSize(float32(a.set.Size)).LineHeight(float32(a.set.LineSpacing)).
 			Padding(16, 20).Radius(10).Background(t.Background).Children(func() {
 			for n := 1; n <= 2; n++ {
-				a.segments(c, a.quran.Verse(112, n).Segments, "settings")
+				a.segments(c, a.quran.Verse(112, n).Segments)
 				ui.Text(c, " ")
-				a.ayahMark(c, n, "settings")
+				a.ayahMark(c, n)
 				ui.Text(c, " ")
 			}
 		})

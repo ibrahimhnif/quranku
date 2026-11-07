@@ -145,7 +145,7 @@ func (a *app) onboardWelcome(c *ui.Context) {
 		f := quranFonts[a.set.Font]
 		ui.RichText(c).Font(f.Family).FontSize(38).LineHeight(2).TextAlign(ui.Center).AlignSelf(ui.Stretch).
 			Padding(18).Radius(16).Background(t.Surface).Children(func() {
-			a.segments(c, a.quran.Basmalah, "welcome")
+			a.segments(c, a.quran.Basmalah)
 		})
 		ui.Row(c).Gap(12).AlignItems(ui.Center).Children(func() {
 			ui.Text(c, a.tx(txtChooseLang)).FontSize(14).Width(90)
@@ -197,9 +197,9 @@ func (a *app) onboardReading(c *ui.Context) {
 		if a.choiceCard(c, "verses", a.set.Mode == ModeVerses, a.tx(txtVerseByVerse), a.tx(txtVerseByVerseD), func() {
 			ui.Column(c).Gap(6).Padding(12).Radius(10).Background(t.Background).Children(func() {
 				ui.RichText(c).Font(f.Family).FontSize(24).LineHeight(1.8).Children(func() {
-					a.segments(c, v.Segments, "pv")
+					a.segments(c, v.Segments)
 					ui.Text(c, " ")
-					a.ayahMark(c, 2, "pv")
+					a.ayahMark(c, 2)
 				})
 				ui.Text(c, a.translationText(v)).FontSize(12).TextColor(t.TextMuted)
 			})
@@ -211,9 +211,9 @@ func (a *app) onboardReading(c *ui.Context) {
 				ui.Text(c, "سُورَةُ الفاتحة").Font(quranFont).FontSize(15).TextColor(t.Accent).AlignSelf(ui.Center)
 				for _, n := range []int{1, 2} {
 					ui.RichText(c.Key(n)).Font(f.Family).FontSize(19).LineHeight(1.7).TextAlign(ui.Center).Children(func() {
-						a.segments(c, a.quran.Verse(1, n).Segments, "pm")
+						a.segments(c, a.quran.Verse(1, n).Segments)
 						ui.Text(c, " ")
-						a.ayahMark(c, n, "pm")
+						a.ayahMark(c, n)
 					})
 				}
 			})
@@ -245,9 +245,9 @@ func (a *app) onboardLook(c *ui.Context) {
 			v := a.quran.Verse(1, n)
 			ui.Column(c.Key(n)).Gap(4).Children(func() {
 				ui.RichText(c).Font(f.Family).FontSize(float32(a.set.Size)).LineHeight(float32(a.set.LineSpacing)).Children(func() {
-					a.segments(c, v.Segments, "look")
+					a.segments(c, v.Segments)
 					ui.Text(c, " ")
-					a.ayahMark(c, n, "look")
+					a.ayahMark(c, n)
 				})
 				if a.set.Translation {
 					ui.Text(c, a.translationText(v)).FontSize(float32(a.set.TransSize)).TextColor(t.TextMuted)

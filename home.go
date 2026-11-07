@@ -105,7 +105,7 @@ func (a *app) continuePanel(c *ui.Context) {
 			})
 			f := quranFonts[a.set.Font]
 			ui.RichText(c).Font(f.Family).FontSize(30).LineHeight(1.9).MaxLines(2).TextAlign(ui.Start).Children(func() {
-				a.segments(c, v.Segments, "continue")
+				a.segments(c, v.Segments)
 			})
 			ui.Row(c).Gap(12).AlignItems(ui.Center).Children(func() {
 				ui.Progress(c, min(float64(today)/float64(max(goal, 1)), 1)).Width(220).Label(a.tx(txtGoal))
