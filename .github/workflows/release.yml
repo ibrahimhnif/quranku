@@ -21,6 +21,12 @@ jobs:
           - { name: macOS, os: macos-latest, platform: darwin/universal }
           - { name: Windows, os: ubuntu-latest, platform: windows/amd64 }
           - { name: Linux, os: ubuntu-latest, platform: "linux/amd64,linux/arm64" }
+          - { name: Android, os: ubuntu-latest, platform: android }
+          - { name: iOS, os: macos-latest, platform: ios/simulator }
+    env:
+      # A device build of iOS needs an Apple Developer certificate and a
+      # provisioning profile; without them, only the simulator's app builds.
+      IOS_CERTIFICATE: ${{ secrets.IOS_CERTIFICATE }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -32,8 +38,43 @@ jobs:
       - name: Install NSIS, for the Windows installer
         if: matrix.name == 'Windows'
         run: sudo apt-get update && sudo apt-get install -y nsis
+      - name: Set up the JDK, for Gradle
+        if: matrix.name == 'Android'
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Find the Android NDK
+        if: matrix.name == 'Android'
+        run: |
+          # The runner's SDK has NDKs; the newest builds Go.
+          ndk=${ANDROID_NDK_LATEST_HOME:-$(ls -d "$ANDROID_HOME"/ndk/* | sort -V | tail -1)}
+          echo "ANDROID_NDK_HOME=$ndk" >> "$GITHUB_ENV"
+          echo "NDK: $ndk"
+      - name: Import the iOS certificate and provisioning profile
+        if: matrix.name == 'iOS' && env.IOS_CERTIFICATE != ''
+        env:
+          IOS_CERTIFICATE_PASSWORD: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+          IOS_PROFILE: ${{ secrets.IOS_PROFILE }}
+        run: |
+          keychain="$RUNNER_TEMP/signing.keychain-db"
+          password="$(openssl rand -base64 24)"
+          security create-keychain -p "$password" "$keychain"
+          security set-keychain-settings -lut 21600 "$keychain"
+          security unlock-keychain -p "$password" "$keychain"
+          echo "$IOS_CERTIFICATE" | base64 --decode > "$RUNNER_TEMP/certificate.p12"
+          security import "$RUNNER_TEMP/certificate.p12" -k "$keychain" -P "$IOS_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          rm "$RUNNER_TEMP/certificate.p12"
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$password" "$keychain"
+          security list-keychains -d user -s "$keychain" login.keychain
+          profiles="$HOME/Library/MobileDevice/Provisioning Profiles"
+          mkdir -p "$profiles"
+          echo "$IOS_PROFILE" | base64 --decode > "$profiles/quranku.mobileprovision"
       - name: Build
         run: go tool mygo build -platform "${{ matrix.platform }}"
+      - name: Build for iPhones
+        if: matrix.name == 'iOS' && env.IOS_CERTIFICATE != ''
+        run: go tool mygo build -platform ios
       - name: Pack AppImages
         if: matrix.name == 'Linux'
         run: |
@@ -53,6 +94,14 @@ jobs:
               cp build/windows-amd64/*-setup-*.exe dist/
               cp build/windows-amd64/Quranku.exe "dist/Quranku-$version-windows-amd64-portable.exe" ;;
             Linux) cp build/*/*.AppImage build/*/*.deb build/*/*.tar.gz dist/ ;;
+            Android)
+              # Signed with the debug key until a keystore is set up: it
+              # installs on phones, but Google Play takes only an upload key's.
+              find build/android -name '*.apk' -exec cp {} "dist/Quranku-$version-android.apk" \;
+              find build/android -name '*.aab' -exec cp {} "dist/Quranku-$version-android.aab" \; ;;
+            iOS)
+              ditto -c -k --keepParent build/ios-simulator/Quranku.app "dist/Quranku-$version-ios-simulator.zip"
+              if ls build/ios-arm64/*.ipa > /dev/null 2>&1; then cp build/ios-arm64/*.ipa "dist/Quranku-$version-ios.ipa"; fi ;;
           esac
           ls -l dist
       - uses: actions/upload-artifact@v4
