@@ -84,10 +84,14 @@ the reader's controls in sheets, and the system's share sheet for cards.
 
 ```sh
 QURANKU_PHONE=1 go tool mygo dev           # the phone's layout, on the desktop
-go tool mygo dev -platform ios             # the iOS simulator (needs Xcode)
-go tool mygo dev -platform android         # an emulator or device (needs Android Studio and its NDK)
+scripts/mygo-mobile.sh dev -platform ios      # the iOS simulator (needs Xcode)
+scripts/mygo-mobile.sh dev -platform android  # an emulator or device (needs Android Studio and its NDK)
 QURANKU_SHOTS=/tmp go test -run TestPhoneScreens   # screenshots of each screen
 ```
+
+`scripts/mygo-mobile.sh` runs the MyGo CLI with Xcode's toolchain: inside
+`devbox shell`, C compiles with Nix's clang and macOS SDK, which can't build
+for iOS.
 
 On first run Quranku asks five quick questions (language, reading style,
 look, reciter, daily goal); everything can be changed later in Settings.
