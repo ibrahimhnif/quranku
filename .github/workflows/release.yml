@@ -44,6 +44,16 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
+      - name: Cache Gradle's downloads
+        # Maven Central turns away runners that ask too often (429).
+        if: matrix.name == 'Android'
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ hashFiles('go.sum') }}
+          restore-keys: gradle-
       - name: Find the Android NDK
         if: matrix.name == 'Android'
         run: |
