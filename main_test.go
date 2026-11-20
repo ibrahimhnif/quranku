@@ -1012,31 +1012,37 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-// TestSpanTexts joins a word's letters across its colored spans where the
-// system shapes each span alone, and only where the letters join.
+// TestSpanTexts keeps a word's letters joined across its colored spans
+// where the system shapes each span alone.
 func TestSpanTexts(t *testing.T) {
 	defer func(was bool) { shapesBySpan = was }(shapesBySpan)
 	shapesBySpan = true
-	// ٱلرَّحِيمِ, its ي in a rule of its own: ح joins ي, ي joins م.
-	segs := []Segment{{Text: "ٱلرَّحِ"}, {Text: "ي", Rule: rules[0]}, {Text: "مِ"}}
-	got := spanTexts(segs)
-	want := []string{"ٱلرَّحِ‍", "‍ي‍", "‍مِ"}
-	for i := range want {
-		if got[i] != want[i] {
-			t.Errorf("span %d: %q, want %q", i, got[i], want[i])
-		}
-	}
-	// The alef wasla of ٱللَّهِ joins nothing after it; a space ends a word.
-	for _, s := range [][]Segment{
-		{{Text: "ٱ", Rule: rules[0]}, {Text: "للَّهِ"}},
-		{{Text: "بِسْمِ "}, {Text: "ٱ", Rule: rules[0]}},
+	for _, c := range []struct {
+		segs []string
+		want []string
+	}{
+		// ٱلرَّحِيمِ, its ي in a rule of its own: ح joins ي, ي joins م.
+		{[]string{"ٱلرَّحِ", "ي", "مِ"}, []string{"ٱلرَّحِ\u200d", "ي\u200d", "مِ"}},
+		// ٱلرَّحْمَٰنِ, its dagger alef a mark of its own: it goes with its
+		// letter, and م joins ن.
+		{[]string{"رَّحْمَ", "\u0670", "نِ "}, []string{"رَّحْمَ\u0670\u200d", "", "نِ "}},
+		// The alef wasla joins nothing after it; a space ends a word.
+		{[]string{"ٱ", "للَّهِ"}, []string{"ٱ", "للَّهِ"}},
+		{[]string{"بِسْمِ ", "ٱ"}, []string{"بِسْمِ ", "ٱ"}},
 	} {
-		if got := spanTexts(s); got[0] != s[0].Text || got[1] != s[1].Text {
-			t.Errorf("%q %q: joined as %q", s[0].Text, s[1].Text, got)
+		segs := make([]Segment, len(c.segs))
+		for i, s := range c.segs {
+			segs[i] = Segment{Text: s}
+		}
+		got := spanTexts(segs)
+		for i := range c.want {
+			if got[i] != c.want[i] {
+				t.Errorf("%q: span %d is %q, want %q", c.segs, i, got[i], c.want[i])
+			}
 		}
 	}
 	shapesBySpan = false
-	if got := spanTexts(segs); got[1] != "ي" {
-		t.Errorf("joiners where words are shaped whole: %q", got)
+	if got := spanTexts([]Segment{{Text: "ٱلرَّحِ"}, {Text: "ي"}}); got[0] != "ٱلرَّحِ" {
+		t.Errorf("changed where words are shaped whole: %q", got)
 	}
 }

@@ -15,9 +15,17 @@ const zwj = '‍'
 var shapesBySpan = runtime.GOOS == "android"
 
 // spanTexts returns the texts of a run of segments, as the paragraph draws
-// them. Where the system shapes each span alone, a letter whose word goes
-// on in the next span would take its unjoined form: zero width joiners on
-// both sides of that boundary keep the two letters joined.
+// them. Where the system shapes each span alone (cutting the text between
+// grapheme clusters, a letter with its marks), two things keep a word
+// whole:
+//
+//   - A span that starts with marks would cut their letter from the span
+//     before: the marks go with their letter, uncolored.
+//   - A letter that joins the next one, ending a span the word goes on
+//     after, gets a zero width joiner: it takes its joined form. (One at
+//     the start of the next span would belong to the cluster before it.)
+//     The next span's first letter takes its unjoined form, which looks
+//     much as its joined one beside it.
 func spanTexts(segs []Segment) []string {
 	out := make([]string, len(segs))
 	for i, s := range segs {
@@ -26,33 +34,46 @@ func spanTexts(segs []Segment) []string {
 	if !shapesBySpan {
 		return out
 	}
-	for i := 0; i+1 < len(segs); i++ {
-		if joinsAcross(segs[i].Text, segs[i+1].Text) {
-			out[i] += string(zwj)
-			out[i+1] = string(zwj) + out[i+1]
+	for i := 1; i < len(out); i++ {
+		n := 0
+		for _, r := range out[i] {
+			if !unicode.Is(unicode.Mn, r) {
+				break
+			}
+			n += len(string(r))
+		}
+		if n > 0 {
+			out[i-1] += out[i][:n]
+			out[i] = out[i][n:]
+		}
+	}
+	for i := range out {
+		last := lastLetter(out[i])
+		if last == 0 || !joinsLeft(last) {
+			continue
+		}
+		for _, next := range out[i+1:] {
+			if next == "" {
+				continue
+			}
+			if joinsRight([]rune(next)[0]) {
+				out[i] += string(zwj)
+			}
+			break
 		}
 	}
 	return out
 }
 
-// joinsAcross reports whether the last letter of a joins the first of b:
-// a letter that joins the one after it, then one that joins the one before
-// it, with only marks between them.
-func joinsAcross(a, b string) bool {
+// lastLetter is the last rune of s that is not a mark, or 0.
+func lastLetter(s string) rune {
 	var last rune
-	for _, r := range a {
+	for _, r := range s {
 		if !unicode.Is(unicode.Mn, r) {
 			last = r
 		}
 	}
-	var first rune
-	for _, r := range b {
-		if !unicode.Is(unicode.Mn, r) {
-			first = r
-			break
-		}
-	}
-	return joinsLeft(last) && joinsRight(first)
+	return last
 }
 
 // joinsRight reports whether an Arabic letter joins the letter before it
