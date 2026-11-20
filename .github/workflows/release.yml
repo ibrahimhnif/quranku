@@ -85,23 +85,33 @@ jobs:
           scripts/appimage.sh build/linux-amd64 x86_64
           scripts/appimage.sh build/linux-arm64 aarch64
       - name: Collect
+        # The files keep one name from release to release, so that the
+        # README's links (releases/latest/download/...) always reach the
+        # latest; the release's tag says its version.
         run: |
           mkdir dist
-          version=$(jq -r .version mygo.json)
           case "${{ matrix.name }}" in
-            macOS) cp build/*/*.dmg dist/ ;;
+            macOS)
+              cp build/darwin-universal/*.dmg dist/Quranku-macOS.dmg ;;
             Windows)
-              cp build/windows-amd64/*-setup-*.exe dist/
-              cp build/windows-amd64/Quranku.exe "dist/Quranku-$version-windows-amd64-portable.exe" ;;
-            Linux) cp build/*/*.AppImage build/*/*.deb build/*/*.tar.gz dist/ ;;
+              cp build/windows-amd64/*-setup-*.exe dist/Quranku-Windows-Setup.exe
+              cp build/windows-amd64/Quranku.exe dist/Quranku-Windows-Portable.exe ;;
+            Linux)
+              cp build/linux-amd64/*.AppImage dist/Quranku-Linux-x86_64.AppImage
+              cp build/linux-arm64/*.AppImage dist/Quranku-Linux-aarch64.AppImage
+              cp build/linux-amd64/*.deb dist/Quranku-Linux-amd64.deb
+              cp build/linux-arm64/*.deb dist/Quranku-Linux-arm64.deb
+              # The archives keep their names, which install.sh looks for.
+              cp build/*/*.tar.gz build/linux-amd64/install.sh dist/ ;;
             Android)
               # Signed with the debug key until a keystore is set up: it
               # installs on phones, but Google Play takes only an upload key's.
-              find build/android -name '*.apk' -exec cp {} "dist/Quranku-$version-android.apk" \;
-              find build/android -name '*.aab' -exec cp {} "dist/Quranku-$version-android.aab" \; ;;
+              find build/android -name '*.apk' -exec cp {} dist/Quranku-Android.apk \;
+              find build/android -name '*.aab' -exec cp {} dist/Quranku-Android.aab \;
+              test -f dist/Quranku-Android.apk ;;
             iOS)
-              ditto -c -k --keepParent build/ios-simulator/Quranku.app "dist/Quranku-$version-ios-simulator.zip"
-              if ls build/ios-arm64/*.ipa > /dev/null 2>&1; then cp build/ios-arm64/*.ipa "dist/Quranku-$version-ios.ipa"; fi ;;
+              ditto -c -k --keepParent build/ios-simulator/Quranku.app dist/Quranku-iOS-Simulator.zip
+              if ls build/ios-arm64/*.ipa > /dev/null 2>&1; then cp build/ios-arm64/*.ipa dist/Quranku-iOS.ipa; fi ;;
           esac
           ls -l dist
       - uses: actions/upload-artifact@v4
@@ -123,4 +133,4 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "$GITHUB_REF_NAME" dist/* --repo "$GITHUB_REPOSITORY" \
-            --title "Quranku $GITHUB_REF_NAME" --generate-notes
+            --title "Quranku $GITHUB_REF_NAME" --generate-notes --latest

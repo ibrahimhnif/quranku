@@ -51,18 +51,35 @@ follows along, and recaps worth sharing. Built in Go with
 
 ## Download
 
-[Releases](https://github.com/ibrahimhnif/quranku/releases) have the app for
-macOS (`.dmg`, Apple silicon and Intel), Windows (installer, or a portable
-`.exe`) and Linux (AppImage, `.deb`, or a `.tar.gz` with `install.sh`).
+[![Latest release](https://img.shields.io/github/v/release/ibrahimhnif/quranku?label=latest)](https://github.com/ibrahimhnif/quranku/releases/latest)
 
-The builds are not signed yet. On macOS, open the app the first time with
-right-click → Open (or allow it in System Settings → Privacy & Security); on
-Windows, choose "More info" → "Run anyway" when SmartScreen warns. On Linux
-the app needs GTK 3, which desktops have.
+| Platform | Download |
+|---|---|
+| macOS (Apple silicon and Intel) | [Quranku-macOS.dmg](https://github.com/ibrahimhnif/quranku/releases/latest/download/Quranku-macOS.dmg) |
+| Windows | [Installer](https://github.com/ibrahimhnif/quranku/releases/latest/download/Quranku-Windows-Setup.exe) · [Portable .exe](https://github.com/ibrahimhnif/quranku/releases/latest/download/Quranku-Windows-Portable.exe) |
+| Linux (x86-64) | [AppImage](https://github.com/ibrahimhnif/quranku/releases/latest/download/Quranku-Linux-x86_64.AppImage) · [.deb](https://github.com/ibrahimhnif/quranku/releases/latest/download/Quranku-Linux-amd64.deb) |
+| Linux (ARM64) | [AppImage](https://github.com/ibrahimhnif/quranku/releases/latest/download/Quranku-Linux-aarch64.AppImage) · [.deb](https://github.com/ibrahimhnif/quranku/releases/latest/download/Quranku-Linux-arm64.deb) |
+| Android | [Quranku-Android.apk](https://github.com/ibrahimhnif/quranku/releases/latest/download/Quranku-Android.apk) |
+| iOS | [Simulator build](https://github.com/ibrahimhnif/quranku/releases/latest/download/Quranku-iOS-Simulator.zip) (for Xcode's simulator; iPhone and iPad builds need an Apple developer account) |
+
+The links always reach the latest release. Older versions, and the Linux
+archives with `install.sh`, are on the [releases page](https://github.com/ibrahimhnif/quranku/releases).
+
+The builds are not signed yet:
+
+- **macOS:** open the app the first time with right-click → Open, or allow it
+  in System Settings → Privacy & Security.
+- **Windows:** choose "More info" → "Run anyway" when SmartScreen warns.
+- **Android:** allow installing apps from your browser or files app. The APK
+  is signed with a development key, so it is not the one Google Play will
+  carry.
+- **Linux:** the app needs GTK 3, which desktops have. Make the AppImage
+  executable (`chmod +x`) before running it.
 
 A release is made by bumping `version` in `mygo.json` and pushing its tag
 (`git tag v0.2.0 && git push origin v0.2.0`): the Release workflow builds
-every platform and publishes them.
+every platform, publishes them as the latest release, and the links above
+follow.
 
 ## Build and run
 
