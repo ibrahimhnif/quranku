@@ -13,6 +13,7 @@ import (
 
 	"github.com/egoist/mygo"
 	"github.com/egoist/mygo/ui"
+	"github.com/egoist/mygo/ui/mobile"
 )
 
 // Sections of the app, chosen in the sidebar.
@@ -89,9 +90,13 @@ type app struct {
 	// post runs a function on the UI thread (Window.Update); now is the
 	// clock. Tests replace them.
 	post               func(func())
-	media              bool // the system's media controls show what plays
-	phone              bool // laid out for a phone's screen
-	guideOpen          bool // on a phone, the guide's sheet shows
+	media              bool             // the system's media controls show what plays
+	phone              bool             // laid out for a phone's screen
+	guideOpen          bool             // on a phone, the guide's sheet shows
+	pager              mobile.PageState // on a phone, the Mushaf's pages a finger turns
+	pagerGen           int              // a new pager for each jump
+	lastSection        int              // the section the last pass showed
+	sectionOpened      bool             // this pass opens a section
 	now                func() time.Time
 	apiBase, audioBase string
 }

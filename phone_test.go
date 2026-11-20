@@ -64,6 +64,27 @@ func TestPhoneScreens(t *testing.T) {
 		}
 		save(s.name)
 	}
+	// The statistics' recap, after some reading, and the settings' tabs
+	// scrolled to their end.
+	for n := 1; n <= 12; n++ {
+		a.reading.markRead(a.quran.Verse(2, n), a.now())
+	}
+	a.section, a.statsTab = SectionStats, 1
+	for range 3 {
+		tt.Frame()
+	}
+	save("stats-recap")
+	a.statsTab = 0
+	a.section = SectionSettings
+	for tab := TabLook; tab <= TabGeneral; tab++ {
+		a.settingsTab = tab
+		for range 3 {
+			tt.Frame()
+		}
+		save(fmt.Sprint("settings-tab-", tab))
+	}
+	a.settingsTab = TabLook
+
 	// The sheets, risen.
 	sheet := func(name string, open *bool) {
 		*open = true
@@ -100,4 +121,56 @@ func TestPhoneScreens(t *testing.T) {
 		}
 		save(fmt.Sprint("onboarding-", step))
 	}
+}
+
+// fingerDrag moves a finger from one point to another, and lets what it
+// threw come to rest.
+func fingerDrag(tt *ui.Tester, x0, y0, x1, y1 float32) {
+	tt.FingerDown(x0, y0)
+	for i := 1; i <= 10; i++ {
+		tt.Advance(16 * time.Millisecond)
+		f := float32(i) / 10
+		tt.FingerMove(x0+(x1-x0)*f, y0+(y1-y0)*f)
+		tt.Frame()
+	}
+	tt.FingerUp(x1, y1)
+	for range 30 {
+		tt.Advance(50 * time.Millisecond)
+		tt.Frame()
+	}
+}
+
+// TestPhoneGestures scrolls with a finger, and turns the Mushaf's pages as
+// a book read right to left.
+func TestPhoneGestures(t *testing.T) {
+	a := newApp(loadTestQuran(t), defaultSettings(), "")
+	a.set.Onboarded = true
+	tt := phoneTester(a)
+	fingerDrag(tt, 200, 600, 200, 300)
+	if a.homeScroll.Y <= 0 {
+		t.Errorf("home did not scroll: Y %v", a.homeScroll.Y)
+	}
+
+	// Switching to the Mushaf opens it on the page being read; then a jump.
+	a.section, a.set.Mode = SectionRead, ModeMushaf
+	tt.Frame()
+	a.goPage(10)
+	for range 3 {
+		tt.Frame()
+	}
+	turn := func(dx float32, want int) {
+		t.Helper()
+		fingerDrag(tt, 200, 500, 200+dx, 500)
+		if a.set.Page != want {
+			t.Fatalf("swiped %v: page %d, want %d", dx, a.set.Page, want)
+		}
+	}
+	turn(250, 11)  // to the right: the next page, from the left
+	turn(-250, 10) // back
+	// A jump, as the picker makes, and a swipe from there.
+	a.goPage(100)
+	for range 3 {
+		tt.Frame()
+	}
+	turn(250, 101)
 }

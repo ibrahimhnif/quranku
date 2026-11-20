@@ -287,7 +287,7 @@ func (a *app) statsPage(c *ui.Context) {
 		a.pageColumn(c, 1280, func() {
 			ui.Column(c).Gap(16).Children(func() {
 				sectionTitle(c, a.tx(txtStats))
-				if ui.Tabs(c, &a.statsTab, a.tx(txtSummary), a.tx(txtRecap), a.tx(txtBadges)).Changed() {
+				if a.tabRow(c, &a.statsTab, a.tx(txtSummary), a.tx(txtRecap), a.tx(txtBadges)) {
 					a.statsScroll.Y = 0
 				}
 			})
@@ -372,16 +372,17 @@ func (a *app) resetStats() {
 
 // Texts of the statistics' tabs.
 var (
-	txtSummary    = T{"Overview", "Ringkasan"}
-	txtRecap      = T{"Recap", "Rekap"}
-	txtBadges     = T{"Badges", "Lencana"}
-	txtThisWeek   = T{"This week", "Minggu ini"}
-	txtThisMonth  = T{"This month", "Bulan ini"}
-	txtThisYear   = T{"This year", "Tahun ini"}
-	txtRecapEmpty = T{"Nothing read yet in this period. Your recap fills in as you read.", "Belum ada bacaan di periode ini. Rekapmu terisi seiring kamu membaca."}
-	txtRecapNote  = T{"Pick a card to share as an image. Shared cards invite others to read; your numbers stay on this computer unless you share them.", "Pilih kartu untuk dibagikan sebagai gambar. Kartu mengajak orang lain ikut membaca; angkamu tetap di komputer ini kecuali kamu membagikannya."}
-	txtBadgesOf   = T{"%d of %d badges", "%d dari %d lencana"}
-	txtNotYet     = T{"Not yet", "Belum diraih"}
+	txtSummary        = T{"Overview", "Ringkasan"}
+	txtRecap          = T{"Recap", "Rekap"}
+	txtBadges         = T{"Badges", "Lencana"}
+	txtThisWeek       = T{"This week", "Minggu ini"}
+	txtThisMonth      = T{"This month", "Bulan ini"}
+	txtThisYear       = T{"This year", "Tahun ini"}
+	txtRecapEmpty     = T{"Nothing read yet in this period. Your recap fills in as you read.", "Belum ada bacaan di periode ini. Rekapmu terisi seiring kamu membaca."}
+	txtRecapNotePhone = T{"Swipe through your cards, and share one as an image. Your numbers stay on this phone unless you share them.", "Geser untuk melihat kartu, lalu bagikan sebagai gambar. Angkamu tetap di HP ini kecuali kamu membagikannya."}
+	txtRecapNote      = T{"Pick a card to share as an image. Shared cards invite others to read; your numbers stay on this computer unless you share them.", "Pilih kartu untuk dibagikan sebagai gambar. Kartu mengajak orang lain ikut membaca; angkamu tetap di komputer ini kecuali kamu membagikannya."}
+	txtBadgesOf       = T{"%d of %d badges", "%d dari %d lencana"}
+	txtNotYet         = T{"Not yet", "Belum diraih"}
 )
 
 // recapTab shows the period's reading as cards to share.
@@ -398,7 +399,11 @@ func (a *app) recapTab(c *ui.Context) {
 		})
 		return
 	}
-	ui.Text(c, a.tx(txtRecapNote)).FontSize(13).TextColor(t.TextMuted).MaxWidth(720)
+	note := txtRecapNote
+	if a.phone {
+		note = txtRecapNotePhone
+	}
+	ui.Text(c, a.tx(note)).FontSize(13).TextColor(t.TextMuted).MaxWidth(720)
 	cards := []ShareCard{{Kind: CardSummary, Recap: r}}
 	if len(r.TopSurahs) > 0 {
 		cards = append(cards, ShareCard{Kind: CardSurahs, Recap: r})
@@ -408,6 +413,10 @@ func (a *app) recapTab(c *ui.Context) {
 		cards = append(cards, ShareCard{Kind: CardHabit, Recap: r})
 	}
 	style := a.cardStyles()[0]
+	if a.phone {
+		a.recapCarousel(c, cards, style)
+		return
+	}
 	ui.Row(c).Gap(20).Wrap().Children(func() {
 		for i, card := range cards {
 			ui.Column(c.Key(i)).Gap(10).AlignItems(ui.Center).Children(func() {

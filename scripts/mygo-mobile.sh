@@ -20,4 +20,5 @@ exec env -i \
 	DEVELOPER_DIR="$developer" \
 	${ANDROID_HOME:+ANDROID_HOME="$ANDROID_HOME"} \
 	${JAVA_HOME:+JAVA_HOME="$JAVA_HOME"} \
+	${GOFLAGS:+GOFLAGS="$GOFLAGS"} \
 	go tool mygo "$@"

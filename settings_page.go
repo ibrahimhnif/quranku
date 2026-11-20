@@ -40,7 +40,7 @@ func (a *app) settingsPage(c *ui.Context) {
 		a.pageColumn(c, 760, func() {
 			ui.Column(c).Gap(16).Children(func() {
 				sectionTitle(c, a.tx(txtSettings))
-				if ui.Tabs(c, &a.settingsTab, a.tx(txtLookSection), a.tx(txtArabicText), a.tx(txtWhichTrans), a.tx(txtRecitation), a.tx(txtGeneral)).Changed() {
+				if a.tabRow(c, &a.settingsTab, a.tx(txtLookSection), a.tx(txtArabicText), a.tx(txtWhichTrans), a.tx(txtRecitation), a.tx(txtGeneral)) {
 					a.settingsScroll.Y = 0
 				}
 			})
@@ -118,11 +118,15 @@ func (a *app) settingsArabic(c *ui.Context) {
 	})
 	a.settingsSection(c, txtTajweed, func() {
 		a.settingRow(c, "colors", &a.set.Colors, a.tx(txtTajweedColors))
-		a.settingRow(c, "guide", &a.set.Guide, a.tx(txtTajweedGuide))
+		if !a.phone { // a phone shows the guide as a letter is tapped
+			a.settingRow(c, "guide", &a.set.Guide, a.tx(txtTajweedGuide))
+		}
 	})
-	a.settingsSection(c, txtMushafOpts, func() {
-		a.settingRow(c, "spread", &a.set.Spread, a.tx(txtSpread))
-	})
+	if !a.phone { // a phone's screen holds one page
+		a.settingsSection(c, txtMushafOpts, func() {
+			a.settingRow(c, "spread", &a.set.Spread, a.tx(txtSpread))
+		})
+	}
 }
 
 func (a *app) settingsGeneral(c *ui.Context) {
@@ -155,6 +159,14 @@ func (a *app) settingsSection(c *ui.Context, title T, fn func()) {
 
 // fieldRow is a label with its control.
 func (a *app) fieldRow(c *ui.Context, label string, fn func()) {
+	if a.phone {
+		// The label over its control, which takes the screen's width.
+		ui.Column(c.Key(label)).Gap(8).AlignItems(ui.Start).Children(func() {
+			ui.Text(c, label).FontSize(13)
+			fn()
+		})
+		return
+	}
 	ui.Row(c.Key(label)).Gap(10).AlignItems(ui.Center).Children(func() {
 		ui.Text(c, label).FontSize(13).Width(150)
 		fn()
@@ -165,7 +177,12 @@ func (a *app) fieldRow(c *ui.Context, label string, fn func()) {
 func (a *app) goalStepper(c *ui.Context) {
 	t := c.Theme()
 	ui.Row(c).Gap(10).AlignItems(ui.Center).Children(func() {
-		ui.Text(c, a.tx(txtGoal)).FontSize(13).Width(150)
+		label := ui.Text(c, a.tx(txtGoal)).FontSize(13)
+		if a.phone {
+			label.Grow(1) // the stepper at the end of the row
+		} else {
+			label.Width(150)
+		}
 		if iconButton(c, iconMinus, a.tx(txtGoal)+" −").Clicked() {
 			a.set.DailyGoal = max(a.set.DailyGoal-5, 5)
 		}

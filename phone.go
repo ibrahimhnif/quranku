@@ -35,6 +35,8 @@ func phoneTab(section int) int {
 // tabs, with what plays between them.
 func (a *app) phoneView(c *ui.Context) {
 	t := c.Theme()
+	a.sectionOpened = a.section != a.lastSection
+	a.lastSection = a.section
 	ui.Column(c).Fill().Background(t.Background).Children(func() {
 		ui.Column(c).Grow(1).MinHeight(0).Bind(&a.contentArea).Children(func() {
 			switch a.section {
@@ -235,4 +237,105 @@ func (a *app) shareCardFile(c *ui.Context, card ShareCard, p Paper, format int, 
 			}
 		})
 	}()
+}
+
+// phoneMushaf shows the Mushaf a page at a time, which a finger turns as a
+// book read right to left: the next page comes from the left. A page longer
+// than the screen scrolls down.
+func (a *app) phoneMushaf(c *ui.Context) {
+	// The pager's pages run left to right, from the last page to the first.
+	index := func(page int) int { return PageCount - page }
+	if a.pager.Page != index(a.set.Page) {
+		// The buttons, the picker or the recitation turned it: a new pager
+		// opens on the page, rather than sliding past those between.
+		a.pager = mobile.PageState{Page: index(a.set.Page)}
+		a.pagerGen++
+	}
+	ui.Column(c).Grow(1).Background(a.pal.Desk).Children(func() {
+		a.pageNav(c)
+		at := a.pager.Page
+		ui.Column(c.Key(fmt.Sprint("pager", a.pagerGen))).Grow(1).Children(func() {
+			a.phonePages(c, at)
+		})
+		if a.pager.Page != at {
+			a.goPage(PageCount - a.pager.Page) // a finger turned it
+		}
+	})
+}
+
+// phonePages are the Mushaf's pages a finger swipes between.
+func (a *app) phonePages(c *ui.Context, at int) {
+	{
+		mobile.PageView(c, &a.pager, PageCount, func(i int) {
+			p := a.quran.Pages[PageCount-i]
+			scroll := ui.Scroll(c.Key(p.Number)).Fill()
+			if i == at {
+				scroll.TrackScroll(&a.pageScroll).Bind(&a.mushafArea)
+			}
+			scroll.Children(func() {
+				ui.Row(c).Justify(ui.Center).AlignItems(ui.Start).Padding(8, 8, 24, 8).Children(func() {
+					a.mushafPage(c, p)
+				})
+			})
+		}).Grow(1).FillWidth()
+	}
+}
+
+// tabRow chooses *selected of the tabs, and reports a new choice. On a
+// phone, a row wider than the screen scrolls across from edge to edge, and
+// keeps the chosen tab in view as it is chosen or the section opens.
+func (a *app) tabRow(c *ui.Context, selected *int, labels ...string) bool {
+	if !a.phone {
+		return ui.Tabs(c, selected, labels...).Changed()
+	}
+	t := c.Theme()
+	changed := false
+	ui.ScrollHorizontal(c).Margin(0, -16, 0, -16).Padding(0, 12).Gap(4).Role(ui.RoleTabList).Children(func() {
+		for i, label := range labels {
+			on := i == *selected
+			tab := ui.Column(c.Key(i)).Padding(8, 10, 0, 10).Gap(8).AlignItems(ui.Center).
+				Role(ui.RoleTab).Label(label).Checked(on)
+			if tab.Clicked() && !on {
+				*selected, changed, on = i, true, true
+			}
+			tab.Children(func() {
+				text := ui.Text(c, label).FontSize(15).NoWrap()
+				line := ui.Box(c).Height(2).FillWidth().Radius(1)
+				if on {
+					text.Bold()
+					line.Background(t.Accent)
+				} else {
+					text.TextColor(t.TextMuted)
+				}
+			})
+			if on && (changed || a.sectionOpened) {
+				tab.ScrollIntoView(ui.ScrollIntoViewOptions{Inline: ui.ScrollNearest, Block: ui.ScrollNearest})
+			}
+		}
+	})
+	return changed
+}
+
+// recapCarousel shows the recap's cards side by side, a finger swiping from
+// one to the next, the next peeking in at the edge.
+func (a *app) recapCarousel(c *ui.Context, cards []ShareCard, style Paper) {
+	// Cards of a size the screen shows whole, with the next one's edge.
+	w := max(a.contentWidth(c, 600)*0.62, 180)
+	unit := w / cardWidth
+	ui.ScrollHorizontal(c).ScrollSnap(ui.SnapMandatory).Margin(0, -16, 0, -16).Padding(0, 16, 4, 16).Gap(12).Children(func() {
+		for i, card := range cards {
+			ui.Column(c.Key(i)).Gap(10).AlignItems(ui.Center).SnapAlign(ui.Start).Children(func() {
+				shot := ui.Column(c).Radius(8).Clip().Shadow(0, 4, 16, 0, ui.RGBA(0, 0, 0, 0.12)).Label(a.tx(txtShare))
+				if shot.Clicked() {
+					a.openShare(card)
+				}
+				shot.Children(func() {
+					a.cardView(c, card, style, FormatStory, unit)
+				})
+				if labeledButton(c, iconShare, a.tx(txtShare), true).Clicked() {
+					a.openShare(card)
+				}
+			})
+		}
+	})
 }

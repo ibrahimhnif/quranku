@@ -51,6 +51,10 @@ func (a *app) shownPages() []*Page {
 
 // mushaf shows the Mushaf's page, or two side by side as an open book.
 func (a *app) mushaf(c *ui.Context) {
+	if a.phone {
+		a.phoneMushaf(c)
+		return
+	}
 	ui.Column(c).Grow(1).Background(a.pal.Desk).Children(func() {
 		a.pageNav(c)
 		ui.Scroll(c).Grow(1).TrackScroll(&a.pageScroll).Bind(&a.mushafArea).Children(func() {
