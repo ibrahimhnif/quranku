@@ -136,7 +136,11 @@ func (a *app) segmentsQuiet(c *ui.Context, segs []Segment, quiet bool) {
 		el.Cursor(ui.CursorPointer).TextColor(col.Alpha(alpha))
 		if el.Clicked() {
 			a.focus = r
-			a.set.Guide = true
+			if a.phone {
+				a.guideOpen = true // in a sheet, over the text
+			} else {
+				a.set.Guide = true
+			}
 		}
 		ui.TooltipBase(c, el, func(tip ui.Element) {
 			a.ruleCard(c, tip, r)

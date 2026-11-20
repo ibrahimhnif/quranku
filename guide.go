@@ -24,8 +24,16 @@ func (a *app) ruleCounts() (map[*Rule]int, T) {
 // guidePanel lists the rules, and explains the one chosen.
 func (a *app) guidePanel(c *ui.Context) {
 	t := c.Theme()
-	counts, countText := a.ruleCounts()
 	ui.Scroll(c).Width(300).Background(t.Surface).BorderWidth(0, 0, 0, 1).BorderColor(t.Border).Children(func() {
+		a.guideContent(c)
+	})
+}
+
+// guideContent explains the tajweed rules, or the one in focus.
+func (a *app) guideContent(c *ui.Context) {
+	t := c.Theme()
+	counts, countText := a.ruleCounts()
+	{
 		ui.Column(c).Padding(16).Gap(14).Children(func() {
 			ui.Row(c).AlignItems(ui.Center).Children(func() {
 				ui.Text(c, a.tx(txtGuideTitle)).FontSize(16).Bold().Grow(1)
@@ -50,7 +58,7 @@ func (a *app) guidePanel(c *ui.Context) {
 			}
 			ui.Text(c, a.tx(txtCredits)).FontSize(10).TextColor(t.TextMuted)
 		})
-	})
+	}
 }
 
 func (a *app) ruleRow(c *ui.Context, r *Rule, n int) {

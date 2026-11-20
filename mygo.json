@@ -9,5 +9,13 @@
     "categories": ["Education"],
     "webview": false,
     "command": "quranku"
+  },
+  "ios": {
+    "orientations": ["portrait"],
+    "backgroundModes": ["audio"],
+    "launchScreen": { "background": "#0B5C55" }
+  },
+  "android": {
+    "splash": "#0B5C55"
   }
 }

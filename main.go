@@ -90,6 +90,8 @@ type app struct {
 	// clock. Tests replace them.
 	post               func(func())
 	media              bool // the system's media controls show what plays
+	phone              bool // laid out for a phone's screen
+	guideOpen          bool // on a phone, the guide's sheet shows
 	now                func() time.Time
 	apiBase, audioBase string
 }
@@ -140,7 +142,7 @@ func (a *app) open(s *Surah) {
 // goPage shows page n of the Mushaf (and the one after, as a spread).
 func (a *app) goPage(n int) {
 	n = max(1, min(n, PageCount))
-	if a.set.Spread && n%2 == 0 {
+	if a.spread() && n%2 == 0 {
 		n-- // a spread starts on an odd page, on the right
 	}
 	if n != a.set.Page {
@@ -154,7 +156,7 @@ func (a *app) goPage(n int) {
 
 // pageStep is how far the next and previous buttons turn.
 func (a *app) pageStep() int {
-	if a.set.Spread {
+	if a.spread() {
 		return 2
 	}
 	return 1
@@ -203,7 +205,9 @@ func (a *app) view(c *ui.Context) {
 		a.finishPass(c)
 		return
 	}
-	if a.section == SectionRead {
+	if a.phone {
+		a.phoneView(c)
+	} else if a.section == SectionRead {
 		a.readerView(c)
 	} else {
 		ui.Row(c).Fill().AlignItems(ui.Stretch).Children(func() {
@@ -418,8 +422,15 @@ func (a *app) todayLine(today, goal int) string {
 // surahPicker finds a surah to read, without leaving the reader.
 func (a *app) surahPicker(c *ui.Context) {
 	t := c.Theme()
-	ui.Column(c).Width(340).Gap(8).Padding(4).Children(func() {
-		ui.SearchField(c, &a.pickerQuery).Placeholder(a.tx(txtSearch)).AutoFocus()
+	box := ui.Column(c).Gap(8).Padding(4)
+	if !a.phone {
+		box.Width(340)
+	}
+	box.Children(func() {
+		search := ui.SearchField(c, &a.pickerQuery).Placeholder(a.tx(txtSearch))
+		if !a.phone {
+			search.AutoFocus() // on a phone, the keyboard would cover the list
+		}
 		results := a.quran.Search(a.pickerQuery)
 		ui.List(c, &a.surahs, len(results), func(i int) {
 			s := results[i]
@@ -448,7 +459,11 @@ func (a *app) surahPicker(c *ui.Context) {
 
 // quickDisplay changes how the text looks without leaving it.
 func (a *app) quickDisplay(c *ui.Context) {
-	ui.Column(c).Width(400).Gap(12).Padding(6).Children(func() {
+	box := ui.Column(c).Gap(12).Padding(6)
+	if !a.phone {
+		box.Width(400)
+	}
+	box.Children(func() {
 		ui.Row(c).Gap(6).Wrap().Children(func() {
 			for _, p := range allPapers(a.set.Themes) {
 				a.themeSwatch(c, p)
@@ -458,8 +473,10 @@ func (a *app) quickDisplay(c *ui.Context) {
 		a.sliderRow(c, a.tx(txtLineSpacing), &a.set.LineSpacing, 1.5, 3)
 		a.settingRow(c, "q-translation", &a.set.Translation, a.tx(txtTranslation))
 		a.settingRow(c, "q-colors", &a.set.Colors, a.tx(txtTajweedColors))
-		a.settingRow(c, "q-guide", &a.set.Guide, a.tx(txtTajweedGuide))
-		if a.set.Mode == ModeMushaf {
+		if !a.phone {
+			a.settingRow(c, "q-guide", &a.set.Guide, a.tx(txtTajweedGuide))
+		}
+		if a.set.Mode == ModeMushaf && !a.phone {
 			a.settingRow(c, "q-spread", &a.set.Spread, a.tx(txtSpread))
 		}
 		if labeledButton(c, iconSettings, a.tx(txtAllSettings), false).AlignSelf(ui.Start).Clicked() {
@@ -649,8 +666,9 @@ func main() {
 	}
 	a := newApp(q, loadSettings(settingsFile), dataDir)
 	a.file = settingsFile
+	a.phone = onPhone()
 	mygo.App.WhenReady(func() {
-		win := mygo.NewWindow(mygo.WindowOptions{
+		opts := mygo.WindowOptions{
 			Title:     "Quranku",
 			Width:     1320,
 			Height:    880,
@@ -658,7 +676,14 @@ func main() {
 			MinHeight: 600,
 			StateKey:  "main",
 			Content:   ui.View(a.view),
-		})
+		}
+		if a.phone {
+			// On a desktop, the phone's layout shows in a window of a
+			// phone's size; phones fill the screen whatever it says.
+			opts.Width, opts.Height, opts.MinWidth, opts.MinHeight = 393, 852, 340, 560
+			opts.StateKey = "phone"
+		}
+		win := mygo.NewWindow(opts)
 		a.post = win.Update
 		a.listenMedia()
 		if runtime.GOOS == "darwin" {

@@ -37,7 +37,7 @@ var (
 // applied as it changes.
 func (a *app) settingsPage(c *ui.Context) {
 	ui.Scroll(c).Grow(1).TrackScroll(&a.settingsScroll).Children(func() {
-		pageColumn(c, 760, func() {
+		a.pageColumn(c, 760, func() {
 			ui.Column(c).Gap(16).Children(func() {
 				sectionTitle(c, a.tx(txtSettings))
 				if ui.Tabs(c, &a.settingsTab, a.tx(txtLookSection), a.tx(txtArabicText), a.tx(txtWhichTrans), a.tx(txtRecitation), a.tx(txtGeneral)).Changed() {

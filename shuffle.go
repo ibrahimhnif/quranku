@@ -158,13 +158,19 @@ func (a *app) shufflePage(c *ui.Context) {
 	t := c.Theme()
 	s := &a.shuf
 	ui.Scroll(c).Grow(1).TrackScroll(&a.shuffleScroll).Children(func() {
-		pageColumn(c, 960, func() {
+		a.pageColumn(c, 960, func() {
 			{
+				if a.phone {
+					// Shuffle opens from home, which this goes back to.
+					if labeledButton(c, iconBack, a.tx(txtHome), false).AlignSelf(ui.Start).Clicked() {
+						a.section = SectionHome
+					}
+				}
 				sectionTitle(c, a.tx(txtShuffle))
 				ui.Text(c, a.tx(txtShuffleIntro)).TextColor(t.TextMuted)
 				// Options.
 				ui.Column(c).Padding(16).Gap(12).Radius(12).Background(t.Surface).Border(1, t.Border).Children(func() {
-					ui.Row(c).Gap(12).AlignItems(ui.Center).Children(func() {
+					ui.Row(c).Gap(12).AlignItems(ui.Center).Wrap().Children(func() {
 						ui.Text(c, a.tx(txtScope)).FontSize(13).Width(70)
 						ui.Segmented(c, &s.scope, a.tx(txtWholeQuran), a.tx(txtJuz), a.tx(txtThisSurah)).Label(a.tx(txtScope))
 						switch s.scope {
@@ -177,7 +183,7 @@ func (a *app) shufflePage(c *ui.Context) {
 							ui.Textf(c, "%d. %s", s.surah, a.quran.Surahs[s.surah-1].Name).FontSize(13).TextColor(t.Accent)
 						}
 					})
-					ui.Row(c).Gap(12).AlignItems(ui.Center).Children(func() {
+					ui.Row(c).Gap(12).AlignItems(ui.Center).Wrap().Children(func() {
 						ui.Text(c, a.tx(txtLength)).FontSize(13).Width(70)
 						ui.Segmented(c, &s.length, a.tx(txtOneVerse), a.tx(txtThreeVerses), a.tx(txtFiveVerses), a.tx(txtOnePage)).Label(a.tx(txtLength))
 					})

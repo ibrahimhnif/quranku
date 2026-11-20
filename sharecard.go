@@ -348,6 +348,10 @@ func (a *app) shareDialog(c *ui.Context) {
 		a.shareStyle = 0
 	}
 	style := styles[a.shareStyle]
+	if a.phone {
+		a.phoneShare(c, styles, style)
+		return
+	}
 	ui.Modal(c, &a.shareOpen, func() {
 		ui.Row(c).Gap(28).Children(func() {
 			unit := float32(0.62)
@@ -359,27 +363,7 @@ func (a *app) shareDialog(c *ui.Context) {
 			})
 			ui.Column(c).Width(250).Gap(14).Children(func() {
 				ui.Text(c, a.tx(txtShare)).FontSize(18).Bold()
-				ui.Text(c, a.tx(txtStyle)).FontSize(12).Bold().TextColor(t.TextMuted)
-				ui.Row(c).Gap(8).Wrap().Children(func() {
-					for i, p := range styles {
-						dot := ui.Column(c.Key(p.ID)).Size(34, 34).Radius(17).Background(p.Page).Cursor(ui.CursorPointer).
-							Justify(ui.Center).AlignItems(ui.Center).Label(a.tx(p.Name)).Tooltip(a.tx(p.Name))
-						if i == a.shareStyle {
-							dot.Border(3, t.Accent)
-						} else {
-							dot.Border(1, t.Border)
-						}
-						if dot.Clicked() {
-							a.shareStyle = i
-						}
-						dot.Children(func() { ui.Box(c).Size(10, 10).Radius(5).Background(p.Accent) })
-					}
-				})
-				ui.Text(c, a.tx(txtFormat)).FontSize(12).Bold().TextColor(t.TextMuted)
-				ui.Segmented(c, &a.shareFormat, "Story 9:16", "Post 1:1").Label(a.tx(txtFormat))
-				if a.share.Kind == CardVerse {
-					a.settingRow(c, "share-tajweed", &a.shareTajweed, a.tx(txtCardTajweed))
-				}
+				a.shareOptions(c, styles)
 				ui.Textf(c, a.tx(txtImageSize), cardWidth*2, int(cardHeight(a.shareFormat))*2).FontSize(11).TextColor(t.TextMuted)
 				ui.Spacer(c)
 				if labeledButton(c, iconDownload, a.tx(txtSaveImage), true).Clicked() {
@@ -422,8 +406,7 @@ func (a *app) saveCard(c *ui.Context, card ShareCard, p Paper, format int) {
 		c.Toast(err.Error())
 		return
 	}
-	name := "quranku-" + strings.ToLower(strings.ReplaceAll(a.cardLabel(card), " ", "-"))
-	name = strings.NewReplacer(":", "", "[", "", "]", "", "–", "-", "·", "").Replace(name) + ".png"
+	name := a.cardFile(card)
 	saved, failed := a.tx(txtSaved), ""
 	go func() {
 		path, err := mygo.Dialog.Save(mygo.SaveDialogOptions{
@@ -443,4 +426,36 @@ func (a *app) saveCard(c *ui.Context, card ShareCard, p Paper, format int) {
 			}
 		})
 	}()
+}
+
+// cardFile is the name a card is saved under.
+func (a *app) cardFile(card ShareCard) string {
+	name := "quranku-" + strings.ToLower(strings.ReplaceAll(a.cardLabel(card), " ", "-"))
+	return strings.NewReplacer(":", "", "[", "", "]", "", "–", "-", "·", "").Replace(name) + ".png"
+}
+
+// shareOptions chooses the card's style and format.
+func (a *app) shareOptions(c *ui.Context, styles []Paper) {
+	t := c.Theme()
+	ui.Text(c, a.tx(txtStyle)).FontSize(12).Bold().TextColor(t.TextMuted)
+	ui.Row(c).Gap(8).Wrap().Children(func() {
+		for i, p := range styles {
+			dot := ui.Column(c.Key(p.ID)).Size(34, 34).Radius(17).Background(p.Page).Cursor(ui.CursorPointer).
+				Justify(ui.Center).AlignItems(ui.Center).Label(a.tx(p.Name)).Tooltip(a.tx(p.Name))
+			if i == a.shareStyle {
+				dot.Border(3, t.Accent)
+			} else {
+				dot.Border(1, t.Border)
+			}
+			if dot.Clicked() {
+				a.shareStyle = i
+			}
+			dot.Children(func() { ui.Box(c).Size(10, 10).Radius(5).Background(p.Accent) })
+		}
+	})
+	ui.Text(c, a.tx(txtFormat)).FontSize(12).Bold().TextColor(t.TextMuted)
+	ui.Segmented(c, &a.shareFormat, "Story 9:16", "Post 1:1").Label(a.tx(txtFormat))
+	if a.share.Kind == CardVerse {
+		a.settingRow(c, "share-tajweed", &a.shareTajweed, a.tx(txtCardTajweed))
+	}
 }

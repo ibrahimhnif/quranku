@@ -525,6 +525,10 @@ func (a *app) recitationPage(c *ui.Context) {
 			ready++
 		}
 	}
+	if a.phone {
+		a.phoneRecitations(c, rec, ready)
+		return
+	}
 	ui.Row(c).Grow(1).AlignItems(ui.Stretch).Children(func() {
 		// Reciters.
 		ui.Scroll(c).Width(300).BorderWidth(0, 1, 0, 0).BorderColor(t.Border).Children(func() {
@@ -565,13 +569,7 @@ func (a *app) recitationPage(c *ui.Context) {
 					ui.Text(c, rec.label()).FontSize(17).Bold()
 					ui.Textf(c, "%d / 114 %s", ready, a.tx(txtSurahsReady)).FontSize(12).TextColor(t.TextMuted)
 				})
-				if len(a.rec.jobs) > 0 || len(a.rec.queue) > 0 {
-					if ui.Button(c, a.tx(txtCancelAll)).Clicked() {
-						a.cancelDownloads()
-					}
-				} else if ready < 114 && labeledButton(c, iconDownload, a.tx(txtDownloadAll), true).Disabled(a.rec.dir == "").Clicked() {
-					a.downloadAll(rec.ID)
-				}
+				a.downloadAllButton(c, rec, ready)
 			})
 			if a.rec.err != "" {
 				ui.Text(c, a.rec.err).FontSize(12).TextColor(t.Danger).Padding(0, 24, 8, 24)
@@ -580,6 +578,52 @@ func (a *app) recitationPage(c *ui.Context) {
 				a.audioRow(c, rec.ID, a.quran.Surahs[i])
 			}).Grow(1).Padding(0, 16, 24, 16)
 		})
+	})
+}
+
+// downloadAllButton downloads the reciter's surahs not on disk, or cancels
+// the downloads.
+func (a *app) downloadAllButton(c *ui.Context, rec *Reciter, ready int) {
+	if len(a.rec.jobs) > 0 || len(a.rec.queue) > 0 {
+		if ui.Button(c, a.tx(txtCancelAll)).Clicked() {
+			a.cancelDownloads()
+		}
+	} else if ready < 114 && labeledButton(c, iconDownload, a.tx(txtDownloadAll), true).Disabled(a.rec.dir == "").Clicked() {
+		a.downloadAll(rec.ID)
+	}
+}
+
+// phoneRecitations is the recitations' page on a phone: the reciter, chosen
+// from a menu, over the surahs.
+func (a *app) phoneRecitations(c *ui.Context, rec *Reciter, ready int) {
+	t := c.Theme()
+	ui.Column(c).Grow(1).Children(func() {
+		ui.Column(c).Padding(16, 16, 8, 16).Gap(10).Children(func() {
+			sectionTitle(c, a.tx(txtRecitations))
+			ui.Text(c, a.tx(txtRecIntro)).FontSize(12).TextColor(t.TextMuted)
+			labels := make([]string, len(reciters))
+			for i := range reciters {
+				labels[i] = reciters[i].label()
+			}
+			chosen := rec.label()
+			if ui.Select(c, &chosen, labels).Label(a.tx(txtReciter)).Changed() {
+				for i := range reciters {
+					if labels[i] == chosen {
+						a.set.Reciter = reciters[i].ID
+					}
+				}
+			}
+			ui.Row(c).Gap(12).AlignItems(ui.Center).Children(func() {
+				ui.Textf(c, "%d / 114 %s", ready, a.tx(txtSurahsReady)).FontSize(12).TextColor(t.TextMuted).Grow(1)
+				a.downloadAllButton(c, rec, ready)
+			})
+			if a.rec.err != "" {
+				ui.Text(c, a.rec.err).FontSize(12).TextColor(t.Danger)
+			}
+		})
+		ui.List(c, &a.audioList, len(a.quran.Surahs), func(i int) {
+			a.audioRow(c, rec.ID, a.quran.Surahs[i])
+		}).Grow(1).Padding(0, 8, 16, 8)
 	})
 }
 

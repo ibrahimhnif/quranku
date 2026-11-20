@@ -70,7 +70,7 @@ func (a *app) homePage(c *ui.Context) {
 	t := c.Theme()
 	a.indexWidth = a.contentWidth(c, 1280)
 	ui.Scroll(c).Grow(1).TrackScroll(&a.homeScroll).Children(func() {
-		pageColumn(c, 1280, func() {
+		a.pageColumn(c, 1280, func() {
 			{
 				ui.Column(c).Gap(4).Children(func() {
 					ui.Text(c, a.tx(txtGreeting)).FontSize(26).Bold()
@@ -92,9 +92,20 @@ func (a *app) continuePanel(c *ui.Context) {
 	today := a.reading.day(a.now()).Read
 	goal := int(a.set.DailyGoal)
 	fresh := a.set.LastVerse == 0 && a.reading.uniqueRead(nil) == 0
-	ui.Row(c).Padding(28, 28, 24, 28).Gap(32).Radius(18).Background(t.Surface).Border(1, t.Border).
+	// On a phone, the buttons go under the verse.
+	var panel ui.Element
+	if a.phone {
+		panel = ui.Column(c).Padding(20, 18, 18, 18).Gap(18)
+	} else {
+		panel = ui.Row(c).Padding(28, 28, 24, 28).Gap(32)
+	}
+	panel.Radius(18).Background(t.Surface).Border(1, t.Border).
 		Shadow(0, 6, 24, 0, ui.RGBA(0, 0, 0, 0.05)).Children(func() {
-		ui.Column(c).Grow(1).Basis(0).Gap(14).Children(func() {
+		text := ui.Column(c).Gap(14)
+		if !a.phone {
+			text.Grow(1).Basis(0)
+		}
+		text.Children(func() {
 			ui.Column(c).Gap(4).Children(func() {
 				title := fmt.Sprintf(a.tx(txtVerseN), s.Name, v.Number)
 				if fresh {
@@ -108,19 +119,38 @@ func (a *app) continuePanel(c *ui.Context) {
 				a.segments(c, v.Segments)
 			})
 			ui.Row(c).Gap(12).AlignItems(ui.Center).Children(func() {
-				ui.Progress(c, min(float64(today)/float64(max(goal, 1)), 1)).Width(220).Label(a.tx(txtGoal))
+				bar := ui.Progress(c, min(float64(today)/float64(max(goal, 1)), 1)).Label(a.tx(txtGoal))
+				if a.phone {
+					bar.Grow(1)
+				} else {
+					bar.Width(220)
+				}
 				ui.Text(c, a.todayLine(today, goal)).FontSize(13).TextColor(t.TextMuted)
 			})
 		})
-		ui.Column(c).Gap(10).Justify(ui.End).AlignItems(ui.Stretch).Width(210).Children(func() {
-			if labeledButton(c, iconRead, a.tx(txtContinue), true).Padding(12, 20).Clicked() {
+		var buttons ui.Element
+		if a.phone {
+			buttons = ui.Row(c).Gap(10).AlignItems(ui.Stretch)
+		} else {
+			buttons = ui.Column(c).Gap(10).Justify(ui.End).AlignItems(ui.Stretch).Width(210)
+		}
+		buttons.Children(func() {
+			cont := labeledButton(c, iconRead, a.tx(txtContinue), true).Padding(12, 20)
+			if a.phone {
+				cont.Grow(1).Basis(0)
+			}
+			if cont.Clicked() {
 				a.continueReading(a.set.Mode)
 			}
 			other, label := ModeMushaf, txtOpenMushafAlt
 			if a.set.Mode == ModeMushaf {
 				other, label = ModeVerses, txtOpenVersesAlt
 			}
-			if ui.Button(c, a.tx(label)).Clicked() {
+			alt := ui.Button(c, a.tx(label))
+			if a.phone {
+				alt.Grow(1).Basis(0)
+			}
+			if alt.Clicked() {
 				a.continueReading(other)
 			}
 		})
@@ -131,14 +161,20 @@ func (a *app) continuePanel(c *ui.Context) {
 func (a *app) homeStrip(c *ui.Context) {
 	t := c.Theme()
 	streak := a.reading.streak(a.now())
-	ui.Row(c).Gap(28).AlignItems(ui.Center).Wrap().Padding(0, 4).Children(func() {
+	gap := float32(28)
+	if a.phone {
+		gap = 4
+	}
+	ui.Row(c).Gap(gap).AlignItems(ui.Center).Wrap().Padding(0, 4).Children(func() {
 		note := fmt.Sprintf(a.tx(txtDaysInRow), streak)
 		if streak == 0 {
 			note = a.tx(txtStartStreak)
 		}
 		a.stripItem(c, iconStreak, note, nil)
 		a.stripItem(c, iconBook, fmt.Sprintf(a.tx(txtVersesSoFar), a.thousands(a.reading.uniqueRead(nil))), func() { a.section = SectionStats })
-		ui.Spacer(c)
+		if !a.phone {
+			ui.Spacer(c)
+		}
 		a.stripItem(c, iconShuffle, a.tx(txtShuffleVerse), func() { a.section = SectionShuffle })
 		a.stripItem(c, iconListen, a.tx(txtListenHere), func() {
 			v := a.lastVerse()
@@ -178,10 +214,13 @@ func (a *app) quranIndex(c *ui.Context) {
 		ui.Row(c).Gap(14).AlignItems(ui.Center).Children(func() {
 			ui.Text(c, a.tx(txtAllSurahs)).FontSize(18).Bold().Grow(1)
 			ui.Segmented(c, &a.indexTab, a.tx(txtBySurah), a.tx(txtByJuzTab)).Label(a.tx(txtAllSurahs))
-			if a.indexTab == 0 {
+			if a.indexTab == 0 && !a.phone {
 				ui.SearchField(c, &a.query).Placeholder(a.tx(txtSearch)).Width(260)
 			}
 		})
+		if a.indexTab == 0 && a.phone {
+			ui.SearchField(c, &a.query).Placeholder(a.tx(txtSearch))
+		}
 		if a.indexTab == 1 {
 			a.juzIndex(c)
 			return
@@ -265,16 +304,24 @@ func (a *app) juzIndex(c *ui.Context) {
 
 // pageColumn lays a section's content out in the middle of the window,
 // maxW wide at most.
-func pageColumn(c *ui.Context, maxW float32, fn func()) {
-	ui.Row(c).Padding(36, 40, 48, 40).Justify(ui.Center).Children(func() {
-		ui.Column(c).Grow(1).MaxWidth(maxW).Gap(28).Children(fn)
+func (a *app) pageColumn(c *ui.Context, maxW float32, fn func()) {
+	pad, gap := [4]float32{36, 40, 48, 40}, float32(28)
+	if a.phone {
+		pad, gap = [4]float32{16, 16, 28, 16}, 22
+	}
+	ui.Row(c).Padding(pad[0], pad[1], pad[2], pad[3]).Justify(ui.Center).Children(func() {
+		ui.Column(c).Grow(1).MinWidth(0).MaxWidth(maxW).Gap(gap).Children(fn)
 	})
 }
 
 // contentWidth is the width of the pages' area, as last laid out, less its
 // margins; 0 before the first frame.
 func (a *app) contentWidth(c *ui.Context, maxW float32) float32 {
-	w := a.contentArea.Bounds(c).W - 80
+	margins := float32(80)
+	if a.phone {
+		margins = 32
+	}
+	w := a.contentArea.Bounds(c).W - margins
 	return max(min(w, maxW), 0)
 }
 
@@ -284,6 +331,9 @@ func (a *app) indexColumns() int {
 	w := a.indexWidth
 	if w <= 0 {
 		return 3
+	}
+	if a.phone {
+		return min(max(int(w/320), 1), 2)
 	}
 	return min(max(int(w/320), 2), 4)
 }

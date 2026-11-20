@@ -50,8 +50,18 @@ func (a *app) onboarding(c *ui.Context) {
 		top = 56
 	}
 	ui.Scroll(c).Fill().Background(t.Background).Bind(&a.obView).Children(func() {
-		ui.Column(c).Padding(top, 40, 40, 40).AlignItems(ui.Center).Children(func() {
-			ui.Column(c).Width(720).Gap(24).Bind(&a.obBody).Children(func() {
+		side := float32(40)
+		if a.phone {
+			side = 20
+		}
+		ui.Column(c).Padding(top, side, 40, side).AlignItems(ui.Center).Children(func() {
+			body := ui.Column(c).Gap(24).Bind(&a.obBody)
+			if a.phone {
+				body.FillWidth()
+			} else {
+				body.Width(720)
+			}
+			body.Children(func() {
 				if a.onboardStep > 0 {
 					a.onboardProgress(c)
 				}
@@ -147,7 +157,7 @@ func (a *app) onboardWelcome(c *ui.Context) {
 			Padding(18).Radius(16).Background(t.Surface).Children(func() {
 			a.segments(c, a.quran.Basmalah)
 		})
-		ui.Row(c).Gap(12).AlignItems(ui.Center).Children(func() {
+		ui.Row(c).Gap(12).AlignItems(ui.Center).Wrap().Children(func() {
 			ui.Text(c, a.tx(txtChooseLang)).FontSize(14).Width(90)
 			ui.Segmented(c, &a.set.Lang, "English", "Bahasa Indonesia").Label(a.tx(txtChooseLang))
 		})
@@ -166,7 +176,10 @@ func (a *app) onboardWelcome(c *ui.Context) {
 // choiceCard is a large option to choose, with a preview inside.
 func (a *app) choiceCard(c *ui.Context, key string, chosen bool, title, note string, preview func()) ui.Element {
 	t := c.Theme()
-	card := ui.Column(c.Key(key)).Grow(1).Basis(0).Padding(18).Gap(12).Radius(14).Cursor(ui.CursorPointer).Background(t.Surface)
+	card := ui.Column(c.Key(key)).Padding(18).Gap(12).Radius(14).Cursor(ui.CursorPointer).Background(t.Surface)
+	if !a.phone {
+		card.Grow(1).Basis(0)
+	}
 	switch {
 	case chosen:
 		card.Border(2, t.Accent)
@@ -193,7 +206,7 @@ func (a *app) onboardReading(c *ui.Context) {
 	f := quranFonts[a.set.Font]
 	v := a.quran.Verse(1, 2)
 	onboardHeading(c, a.tx(txtHowRead), a.tx(txtHowReadNote))
-	ui.Row(c).Gap(16).AlignItems(ui.Stretch).Children(func() {
+	a.choices(c, 16).Children(func() {
 		if a.choiceCard(c, "verses", a.set.Mode == ModeVerses, a.tx(txtVerseByVerse), a.tx(txtVerseByVerseD), func() {
 			ui.Column(c).Gap(6).Padding(12).Radius(10).Background(t.Background).Children(func() {
 				ui.RichText(c).Font(f.Family).FontSize(24).LineHeight(1.8).Children(func() {
@@ -326,7 +339,13 @@ func (a *app) reciterRows(c *ui.Context) {
 func (a *app) onboardGoal(c *ui.Context) {
 	t := c.Theme()
 	onboardHeading(c, a.tx(txtDailyGoalQ), a.tx(txtDailyGoalNote))
-	ui.Row(c).Gap(12).AlignItems(ui.Stretch).Children(func() {
+	var goals ui.Element
+	if a.phone {
+		goals = ui.Grid(c).Columns(2).Gap(10)
+	} else {
+		goals = ui.Row(c).Gap(12).AlignItems(ui.Stretch)
+	}
+	goals.Children(func() {
 		for _, g := range []struct {
 			n    int
 			name T
@@ -353,4 +372,13 @@ func (a *app) onboardGoal(c *ui.Context) {
 			})
 		}
 	})
+}
+
+// choices lays large options out side by side, or one under the other on a
+// phone.
+func (a *app) choices(c *ui.Context, gap float32) ui.Element {
+	if a.phone {
+		return ui.Column(c).Gap(gap)
+	}
+	return ui.Row(c).Gap(gap).AlignItems(ui.Stretch)
 }

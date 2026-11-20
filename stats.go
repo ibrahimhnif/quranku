@@ -284,7 +284,7 @@ func (a *app) statsPage(c *ui.Context) {
 	today := r.day(now)
 	wide := a.contentWidth(c, 1280) >= 1100
 	ui.Scroll(c).Grow(1).TrackScroll(&a.statsScroll).Children(func() {
-		pageColumn(c, 1280, func() {
+		a.pageColumn(c, 1280, func() {
 			ui.Column(c).Gap(16).Children(func() {
 				sectionTitle(c, a.tx(txtStats))
 				if ui.Tabs(c, &a.statsTab, a.tx(txtSummary), a.tx(txtRecap), a.tx(txtBadges)).Changed() {
@@ -299,8 +299,14 @@ func (a *app) statsPage(c *ui.Context) {
 				a.badgesTab(c)
 				return
 			}
-			// The cards.
-			ui.Row(c).Gap(14).AlignItems(ui.Stretch).Children(func() {
+			// The cards: in a row, or two by two on a phone.
+			var cards ui.Element
+			if a.phone {
+				cards = ui.Grid(c).Columns(2).Gap(10)
+			} else {
+				cards = ui.Row(c).Gap(14).AlignItems(ui.Stretch)
+			}
+			cards.Children(func() {
 				a.statCard(c, a.tx(txtToday), fmt.Sprint(today.Read), a.tx(txtVersesRead), func() {
 					goal := max(a.set.DailyGoal, 1)
 					ui.Progress(c, min(float64(today.Read)/goal, 1)).Label(a.tx(txtGoal))
@@ -316,9 +322,11 @@ func (a *app) statsPage(c *ui.Context) {
 			})
 			a.goalStepper(c)
 			// Side by side where there is room.
-			group := ui.Column(c).Gap(14)
+			var group ui.Element
 			if wide {
 				group = ui.Row(c).Gap(14).AlignItems(ui.Stretch)
+			} else {
+				group = ui.Column(c).Gap(14)
 			}
 			group.Children(func() {
 				part := func(fn func()) {
@@ -481,7 +489,11 @@ func (a *app) statsChart(c *ui.Context, now time.Time) {
 	}
 	ui.Column(c).Gap(10).Padding(16).Radius(12).Background(t.Surface).Border(1, t.Border).Children(func() {
 		ui.Text(c, a.tx(txtLast14)).FontSize(13).Bold()
-		ui.Row(c).Gap(6).AlignItems(ui.End).Height(height + 34).Children(func() {
+		barW, gap := float32(18), float32(6)
+		if a.phone {
+			barW, gap = 12, 3
+		}
+		ui.Row(c).Gap(gap).AlignItems(ui.End).Height(height + 34).Children(func() {
 			for i := days - 1; i >= 0; i-- {
 				day := now.AddDate(0, 0, -i)
 				n := 0
@@ -492,7 +504,7 @@ func (a *app) statsChart(c *ui.Context, now time.Time) {
 					if n > 0 {
 						ui.Text(c, fmt.Sprint(n)).FontSize(10).TextColor(t.TextMuted)
 					}
-					bar := ui.Box(c).Width(18).Height(max(2, float32(height*n/most))).Radius(4)
+					bar := ui.Box(c).Width(barW).Height(max(2, float32(height*n/most))).Radius(4)
 					if i == 0 {
 						bar.Background(t.Accent)
 					} else {
@@ -517,7 +529,11 @@ func (a *app) juzProgress(c *ui.Context) {
 	}
 	ui.Column(c).Gap(10).Padding(16).Radius(12).Background(t.Surface).Border(1, t.Border).Children(func() {
 		ui.Text(c, a.tx(txtByJuz)).FontSize(13).Bold()
-		ui.Grid(c).Columns(10).Gap(6).Children(func() {
+		cols := 10
+		if a.phone {
+			cols = 6
+		}
+		ui.Grid(c).Columns(cols).Gap(6).Children(func() {
 			for j := 1; j <= 30; j++ {
 				f := float32(read[j]) / float32(max(total[j], 1))
 				cell := ui.Column(c.Key(j)).Height(46).Radius(8).Justify(ui.Center).AlignItems(ui.Center).

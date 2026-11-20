@@ -20,14 +20,22 @@ func (a *app) mushafSize(c *ui.Context) float32 {
 		return float32(a.set.Size) * 0.8 * f.Scale * zoom // before the first frame
 	}
 	// A page is about k ems high (15 lines, header, footer, margins) and
-	// W+1.6 wide.
+	// W+2.4 wide: its margins, and the frame's.
 	k := 15*float32(a.set.LineSpacing+0.05) + 3.8
 	n := float32(len(a.shownPages()))
+	margin := float32(48)
+	if a.phone {
+		margin = 16
+	}
 	fitH := (r.H - 40) / k
-	fitW := (r.W - 48 - 20*(n-1)) / (n * (f.Width + 1.8))
+	fitW := (r.W - margin - 20*(n-1)) / (n * (f.Width + 2.5))
 	// The page fits the window at a zoom of 1; the zoom scales it from
-	// there, larger pages scrolling down, never wider than the window.
+	// there, larger pages scrolling down, never wider than the window. On a
+	// phone, the page fills the screen's width, and scrolls down.
 	fit := min(fitH, fitW)
+	if a.phone {
+		fit = fitW
+	}
 	a.mushafMaxZoom = float64(fitW / fit)
 	return max(min(fit*zoom, fitW), 10)
 }
@@ -35,7 +43,7 @@ func (a *app) mushafSize(c *ui.Context) float32 {
 // shownPages returns the page shown, and the one after it in a spread.
 func (a *app) shownPages() []*Page {
 	pages := []*Page{a.quran.Pages[a.set.Page]}
-	if a.set.Spread && a.set.Page < PageCount {
+	if a.spread() && a.set.Page < PageCount {
 		pages = append(pages, a.quran.Pages[a.set.Page+1])
 	}
 	return pages
@@ -47,8 +55,12 @@ func (a *app) mushaf(c *ui.Context) {
 		a.pageNav(c)
 		ui.Scroll(c).Grow(1).TrackScroll(&a.pageScroll).Bind(&a.mushafArea).Children(func() {
 			// The first page of a spread is on the right.
+			side := float32(24)
+			if a.phone {
+				side = 8
+			}
 			ui.Row(c).Direction(ui.RightToLeft).Justify(ui.Center).AlignItems(ui.Start).
-				Padding(8, 24, 32, 24).Gap(20).Children(func() {
+				Padding(8, side, 32, side).Gap(20).Children(func() {
 				for _, p := range a.shownPages() {
 					a.mushafPage(c, p)
 				}
@@ -61,13 +73,17 @@ func (a *app) mushaf(c *ui.Context) {
 // is on the left.
 func (a *app) pageNav(c *ui.Context) {
 	t := c.Theme()
+	if a.phone {
+		a.phonePageNav(c)
+		return
+	}
 	ui.Row(c).Padding(10, 20).Gap(12).AlignItems(ui.Center).Justify(ui.Center).Children(func() {
 		next := labeledButton(c, iconBack, a.tx(txtNextShort), false).Disabled(a.set.Page+a.pageStep() > PageCount).Tooltip(a.tx(txtNextPage) + " (←)")
 		if next.Clicked() {
 			a.goPage(a.set.Page + a.pageStep())
 		}
 		pages := fmt.Sprint(a.set.Page)
-		if a.set.Spread && a.set.Page < PageCount {
+		if a.spread() && a.set.Page < PageCount {
 			pages = fmt.Sprintf("%d–%d", a.set.Page, a.set.Page+1)
 		}
 		ui.Textf(c, "%s %s / %d", a.tx(txtPage), pages, PageCount).FontSize(13).TextColor(t.TextMuted).FontFeatures("tnum").MinWidth(150).TextAlign(ui.Center)

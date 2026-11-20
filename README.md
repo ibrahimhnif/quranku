@@ -77,6 +77,18 @@ go tool mygo build    # package the app into build/
 
 With [devbox](https://www.jetify.com/devbox), `devbox shell` provides Go.
 
+### Phones (in progress)
+
+The same app runs on iPhone and Android, laid out for a phone: a bar of tabs,
+the reader's controls in sheets, and the system's share sheet for cards.
+
+```sh
+QURANKU_PHONE=1 go tool mygo dev           # the phone's layout, on the desktop
+go tool mygo dev -platform ios             # the iOS simulator (needs Xcode)
+go tool mygo dev -platform android         # an emulator or device (needs Android Studio and its NDK)
+QURANKU_SHOTS=/tmp go test -run TestPhoneScreens   # screenshots of each screen
+```
+
 On first run Quranku asks five quick questions (language, reading style,
 look, reciter, daily goal); everything can be changed later in Settings.
 
