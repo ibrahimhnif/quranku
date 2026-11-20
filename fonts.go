@@ -2,7 +2,7 @@ package main
 
 import (
 	_ "embed"
-	"log"
+	"fmt"
 
 	"github.com/egoist/mygo/ui"
 )
@@ -40,13 +40,16 @@ var quranFonts = []QuranFont{
 // quranFont is the family of the app's own Arabic texts (names of surahs).
 const quranFont = "Amiri Quran"
 
-func init() {
+// registerFonts gives the text system the Quran's fonts. It runs from
+// main, not init: on a phone, the system is there once the app starts.
+func registerFonts() error {
 	if err := ui.RegisterFont(amiriQuran, "Amiri Quran"); err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("Amiri Quran: %w", err)
 	}
 	if err := ui.RegisterFont(scheherazade, "Scheherazade New"); err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("Scheherazade New: %w", err)
 	}
+	return nil
 }
 
 // ayahMark is the ornament ending verse n: both fonts draw the end of ayah

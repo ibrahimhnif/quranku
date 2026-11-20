@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"runtime/debug"
 	"strings"
 	"time"
 
@@ -669,9 +670,17 @@ func migrateDataDir(dir string) {
 }
 
 func main() {
+	defer func() {
+		if r := recover(); r != nil {
+			fatal(fmt.Errorf("panic: %v\n%s", r, debug.Stack()))
+		}
+	}()
+	if err := registerFonts(); err != nil {
+		fatal(err)
+	}
 	q, err := loadQuran()
 	if err != nil {
-		log.Fatal(err)
+		fatal(err)
 	}
 	dataDir, err := mygo.App.Path(mygo.PathUserData)
 	if err != nil {
@@ -723,6 +732,16 @@ func main() {
 		}()
 	})
 	if err := mygo.App.Run(); err != nil {
-		log.Fatal(err)
+		fatal(err)
 	}
+}
+
+// fatal logs err and ends the app. On a phone, what the app writes reaches
+// the system's log a moment later: it waits for it to get there.
+func fatal(err error) {
+	log.Print("quranku: ", err)
+	if runtime.GOOS == "ios" || runtime.GOOS == "android" {
+		time.Sleep(2 * time.Second)
+	}
+	os.Exit(1)
 }

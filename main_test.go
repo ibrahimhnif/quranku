@@ -1003,3 +1003,11 @@ func TestTranslationsExpire(t *testing.T) {
 		t.Error("a translation eight days old is kept")
 	}
 }
+
+// TestMain registers the Quran's fonts, as main does.
+func TestMain(m *testing.M) {
+	if err := registerFonts(); err != nil {
+		panic(err)
+	}
+	os.Exit(m.Run())
+}
