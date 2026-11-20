@@ -137,8 +137,9 @@ func (a *app) segmentsQuiet(c *ui.Context, segs []Segment, quiet bool) {
 	if quiet {
 		alpha = quietAlpha
 	}
-	for _, seg := range segs {
-		el := ui.Text(c, seg.Text)
+	texts := spanTexts(segs)
+	for i, seg := range segs {
+		el := ui.Text(c, texts[i])
 		r := seg.Rule
 		if r == nil || !a.set.Colors || (a.focus != nil && a.focus != r) {
 			if alpha < 1 {

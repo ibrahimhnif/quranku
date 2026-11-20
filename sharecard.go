@@ -301,8 +301,9 @@ func (a *app) cardBody(c *ui.Context, card ShareCard, p Paper, format int, unit 
 		}
 		ui.Text(c, "سورة "+a.quran.Surahs[v.Surah-1].Arabic).Font(quranFont).FontSize(u(22)).TextColor(accent).AlignSelf(ui.End)
 		ui.RichText(c).Font(f.Family).FontSize(u(size)).LineHeight(1.9).TextAlign(ui.Start).TextColor(ink).Children(func() {
-			for _, seg := range v.Segments {
-				el := ui.Text(c, seg.Text)
+			texts := spanTexts(v.Segments)
+			for i, seg := range v.Segments {
+				el := ui.Text(c, texts[i])
 				if seg.Rule != nil && a.shareTajweed {
 					el.TextColor(seg.Rule.Color(&ui.Theme{Dark: p.Dark}))
 				}

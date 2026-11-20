@@ -1011,3 +1011,32 @@ func TestMain(m *testing.M) {
 	}
 	os.Exit(m.Run())
 }
+
+// TestSpanTexts joins a word's letters across its colored spans where the
+// system shapes each span alone, and only where the letters join.
+func TestSpanTexts(t *testing.T) {
+	defer func(was bool) { shapesBySpan = was }(shapesBySpan)
+	shapesBySpan = true
+	// ٱلرَّحِيمِ, its ي in a rule of its own: ح joins ي, ي joins م.
+	segs := []Segment{{Text: "ٱلرَّحِ"}, {Text: "ي", Rule: rules[0]}, {Text: "مِ"}}
+	got := spanTexts(segs)
+	want := []string{"ٱلرَّحِ‍", "‍ي‍", "‍مِ"}
+	for i := range want {
+		if got[i] != want[i] {
+			t.Errorf("span %d: %q, want %q", i, got[i], want[i])
+		}
+	}
+	// The alef wasla of ٱللَّهِ joins nothing after it; a space ends a word.
+	for _, s := range [][]Segment{
+		{{Text: "ٱ", Rule: rules[0]}, {Text: "للَّهِ"}},
+		{{Text: "بِسْمِ "}, {Text: "ٱ", Rule: rules[0]}},
+	} {
+		if got := spanTexts(s); got[0] != s[0].Text || got[1] != s[1].Text {
+			t.Errorf("%q %q: joined as %q", s[0].Text, s[1].Text, got)
+		}
+	}
+	shapesBySpan = false
+	if got := spanTexts(segs); got[1] != "ي" {
+		t.Errorf("joiners where words are shaped whole: %q", got)
+	}
+}
