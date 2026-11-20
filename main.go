@@ -675,9 +675,6 @@ func main() {
 			fatal(fmt.Errorf("panic: %v\n%s", r, debug.Stack()))
 		}
 	}()
-	if err := registerFonts(); err != nil {
-		fatal(err)
-	}
 	q, err := loadQuran()
 	if err != nil {
 		fatal(err)
@@ -696,6 +693,11 @@ func main() {
 	a.file = settingsFile
 	a.touch = onTouch()
 	mygo.App.WhenReady(func() {
+		// On Android, the system's text draws the app's, and takes its
+		// fonts once the app runs.
+		if err := registerFonts(); err != nil {
+			fatal(err)
+		}
 		opts := mygo.WindowOptions{
 			Title:     "Quranku",
 			Width:     1320,

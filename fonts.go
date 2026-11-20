@@ -40,8 +40,9 @@ var quranFonts = []QuranFont{
 // quranFont is the family of the app's own Arabic texts (names of surahs).
 const quranFont = "Amiri Quran"
 
-// registerFonts gives the text system the Quran's fonts. It runs from
-// main, not init: on a phone, the system is there once the app starts.
+// registerFonts gives the text system the Quran's fonts. It runs once the
+// app is ready, not from init: on Android, the system's text takes them,
+// which is there only then.
 func registerFonts() error {
 	if err := ui.RegisterFont(amiriQuran, "Amiri Quran"); err != nil {
 		return fmt.Errorf("Amiri Quran: %w", err)
