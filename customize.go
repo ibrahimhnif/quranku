@@ -303,6 +303,6 @@ func (a *app) translationChooser(c *ui.Context) {
 }
 
 var txtTransKept = T{
-	"Translations other than Pickthall's come from Quran.Foundation (Quran data provided by Quran.Foundation). They are kept a week at most, and fetched again when online.",
-	"Terjemahan selain Pickthall berasal dari Quran.Foundation (Quran data provided by Quran.Foundation). Disimpan paling lama seminggu, lalu diunduh ulang otomatis saat online.",
+	"Besides Pickthall's, translations are Quran data provided by Quran.Foundation, kept a week and fetched again online.",
+	"Selain Pickthall, terjemahan adalah Quran data provided by Quran.Foundation, disimpan seminggu lalu diperbarui saat online.",
 }

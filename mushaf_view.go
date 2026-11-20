@@ -128,8 +128,25 @@ func (a *app) mushafPage(c *ui.Context, p *Page) {
 				Border(1.5, a.pal.Frame.Alpha(0.55)).
 				InsetShadow(0, 0, 0, 3, a.pal.Page).
 				Children(func() {
+					// The first two pages hold a few lines, which the
+					// printed Mushaf sets in the middle of the frame.
+					empty := 0
+					if p.Number <= 2 {
+						for _, l := range p.Lines {
+							if l.Kind == LineEmpty {
+								empty++
+							}
+						}
+						ui.Box(c.Key("above")).Height(float32(empty/2) * lineH)
+					}
 					for i := range p.Lines {
+						if empty > 0 && p.Lines[i].Kind == LineEmpty {
+							continue
+						}
 						a.mushafLine(c, p, i, size, width, lineH)
+					}
+					if empty > 0 {
+						ui.Box(c.Key("below")).Height(float32(empty-empty/2) * lineH)
 					}
 				})
 			ui.Text(c, arabicDigits(p.Number)).Font(quranFont).FontSize(small).TextColor(t.TextMuted).AlignSelf(ui.Center)

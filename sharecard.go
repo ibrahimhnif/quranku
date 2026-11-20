@@ -356,7 +356,8 @@ func (a *app) shareDialog(c *ui.Context) {
 		return
 	}
 	ui.Modal(c, &a.shareOpen, func() {
-		ui.Row(c).Gap(28).Children(func() {
+		// The options from the card's top, the buttons at its foot.
+		ui.Row(c).Gap(28).AlignItems(ui.Stretch).Children(func() {
 			unit := float32(0.62)
 			if a.shareFormat == FormatPost {
 				unit = 0.7

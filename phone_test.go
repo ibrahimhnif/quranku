@@ -21,116 +21,6 @@ func phoneTester(a *app) *ui.Tester {
 	return tt
 }
 
-// TestPhoneScreens builds each section on a phone's screen. With
-// QURANKU_SHOTS set to a directory, it saves them there, to look at.
-func TestPhoneScreens(t *testing.T) {
-	a := newApp(loadTestQuran(t), defaultSettings(), "")
-	a.set.Onboarded = true
-	tt := phoneTester(a)
-	shots := []struct {
-		name    string
-		section int
-		mode    int
-	}{
-		{"home", SectionHome, 0},
-		{"read-verses", SectionRead, ModeVerses},
-		{"read-mushaf", SectionRead, ModeMushaf},
-		{"read-mushaf-50", SectionRead, ModeMushaf},
-		{"recitations", SectionAudio, 0},
-		{"stats", SectionStats, 0},
-		{"settings", SectionSettings, 0},
-		{"shuffle", SectionShuffle, 0},
-	}
-	save := func(name string) {
-		if dir := os.Getenv("QURANKU_SHOTS"); dir != "" {
-			f, err := os.Create(filepath.Join(dir, "phone-"+name+".png"))
-			if err != nil {
-				t.Fatal(err)
-			}
-			png.Encode(f, tt.Image())
-			f.Close()
-		}
-	}
-	for _, s := range shots {
-		a.section = s.section
-		if s.section == SectionRead {
-			a.set.Mode = s.mode
-		}
-		if s.name == "read-mushaf-50" {
-			a.goPage(50)
-		}
-		for range 3 {
-			tt.Frame()
-		}
-		save(s.name)
-	}
-	// The statistics' recap, after some reading, and the settings' tabs
-	// scrolled to their end.
-	for n := 1; n <= 12; n++ {
-		a.reading.markRead(a.quran.Verse(2, n), a.now())
-	}
-	a.section, a.statsTab = SectionStats, 1
-	for range 3 {
-		tt.Frame()
-	}
-	save("stats-recap")
-	a.statsTab = 0
-	a.section = SectionSettings
-	for tab := TabLook; tab <= TabGeneral; tab++ {
-		a.settingsTab = tab
-		for range 3 {
-			tt.Frame()
-		}
-		save(fmt.Sprint("settings-tab-", tab))
-	}
-	a.settingsTab = TabLook
-
-	// The sheets, risen.
-	sheet := func(name string, open *bool) {
-		*open = true
-		for range 3 {
-			tt.Frame()
-			tt.Advance(time.Second)
-		}
-		tt.Frame()
-		save(name)
-		*open = false
-		for range 3 {
-			tt.Frame()
-			tt.Advance(time.Second)
-		}
-	}
-	a.section, a.set.Mode = SectionRead, ModeVerses
-	sheet("sheet-picker", &a.picker)
-	sheet("sheet-display", &a.quick)
-	a.focus = rules[0]
-	sheet("sheet-guide", &a.guideOpen)
-	a.share = &ShareCard{Kind: CardVerse, Verse: a.quran.Verse(2, 255)}
-	sheet("sheet-share", &a.shareOpen)
-
-	// The introduction, on a first run.
-	a.set.Onboarded = false
-	for range 3 {
-		tt.Frame()
-	}
-	save("onboarding")
-	a.set.Onboarded = true
-	a.section, a.set.Mode = SectionRead, ModeVerses
-	a.open(a.quran.Surahs[1])
-	for range 3 {
-		tt.Frame()
-	}
-	save("read-baqarah")
-	a.set.Onboarded = false
-	for step := 1; step < onboardSteps; step++ {
-		a.onboardStep = step
-		for range 3 {
-			tt.Frame()
-		}
-		save(fmt.Sprint("onboarding-", step))
-	}
-}
-
 // fingerDrag moves a finger from one point to another, and lets what it
 // threw come to rest.
 func fingerDrag(tt *ui.Tester, x0, y0, x1, y1 float32) {
@@ -183,56 +73,101 @@ func TestPhoneGestures(t *testing.T) {
 	turn(250, 101)
 }
 
-// TestTabletScreens builds the sections on an iPad's screen, across and
-// upright. With QURANKU_SHOTS set to a directory, it saves them there.
-func TestTabletScreens(t *testing.T) {
-	for _, o := range []struct {
-		name string
-		w, h int
-		rail bool
-	}{{"landscape", 1180, 820, false}, {"portrait", 820, 1180, true}} {
-		a := newApp(loadTestQuran(t), defaultSettings(), "")
-		a.set.Onboarded, a.touch = true, true
-		for n := 1; n <= 12; n++ {
-			a.reading.markRead(a.quran.Verse(2, n), a.now())
-		}
-		tt := ui.NewTester(a.view, o.w, o.h)
-		tt.SetInsets(24, 0, 20, 0)
-		tt.Frame()
-		if a.phone || a.rail != o.rail {
-			t.Fatalf("%s: phone %v, rail %v", o.name, a.phone, a.rail)
-		}
-		for _, s := range []struct {
-			name    string
-			section int
-			mode    int
-		}{
-			{"home", SectionHome, 0},
-			{"read-verses", SectionRead, ModeVerses},
-			{"read-mushaf", SectionRead, ModeMushaf},
-			{"recitations", SectionAudio, 0},
-			{"stats", SectionStats, 0},
-			{"settings", SectionSettings, 0},
-		} {
-			a.section = s.section
-			if s.section == SectionRead {
-				a.set.Mode = s.mode
-				if s.mode == ModeMushaf {
-					tt.Frame()
-					a.goPage(50)
-				}
+// screen is a device the app is laid out for in TestScreens.
+type screen struct {
+	name        string
+	w, h        int
+	top, bottom float32 // its safe area's insets
+	phone, rail bool    // the layout it should get
+}
+
+var screens = []screen{
+	{"phone", 393, 852, 59, 34, true, false},
+	{"tablet-portrait", 820, 1180, 24, 20, false, true},
+	{"tablet-landscape", 1180, 820, 24, 20, false, false},
+}
+
+// TestScreens builds every screen on a phone and a tablet, across and
+// upright, with something read. With QURANKU_SHOTS set to a directory, it
+// saves each there, to look at.
+func TestScreens(t *testing.T) {
+	for _, d := range screens {
+		t.Run(d.name, func(t *testing.T) {
+			a := newApp(loadTestQuran(t), defaultSettings(), "")
+			a.set.Onboarded, a.touch = true, true
+			for n := 1; n <= 30; n++ {
+				a.reading.markRead(a.quran.Verse(2, n), a.now())
 			}
-			for range 3 {
+			a.reading.markListened(7, a.now())
+			tt := ui.NewTester(a.view, d.w, d.h)
+			tt.SetInsets(d.top, 0, d.bottom, 0)
+			settle := func() {
+				for range 4 {
+					tt.Frame()
+					tt.Advance(time.Second)
+				}
 				tt.Frame()
 			}
-			if dir := os.Getenv("QURANKU_SHOTS"); dir != "" {
-				f, err := os.Create(filepath.Join(dir, "tablet-"+o.name+"-"+s.name+".png"))
-				if err != nil {
-					t.Fatal(err)
-				}
-				png.Encode(f, tt.Image())
-				f.Close()
+			settle()
+			if a.phone != d.phone || a.rail != d.rail {
+				t.Fatalf("phone %v, rail %v", a.phone, a.rail)
 			}
-		}
+			save := func(name string) {
+				if dir := os.Getenv("QURANKU_SHOTS"); dir != "" {
+					f, err := os.Create(filepath.Join(dir, d.name+"-"+name+".png"))
+					if err != nil {
+						t.Fatal(err)
+					}
+					png.Encode(f, tt.Image())
+					f.Close()
+				}
+			}
+			show := func(name string, set func()) {
+				set()
+				settle()
+				save(name)
+			}
+			show("home", func() { a.section = SectionHome })
+			show("read-verses", func() { a.section, a.set.Mode = SectionRead, ModeVerses; a.open(a.quran.Surahs[1]) })
+			show("read-mushaf", func() { a.set.Mode = ModeMushaf })
+			show("read-mushaf-50", func() { a.goPage(50) })
+			a.set.Mode = ModeVerses
+			show("shuffle", func() { a.section = SectionShuffle; a.shuffleNext() })
+			show("stats", func() { a.section, a.statsTab = SectionStats, 0 })
+			show("stats-recap", func() { a.statsTab = 1 })
+			show("stats-badges", func() { a.statsTab = 2 })
+			show("recitations", func() { a.section = SectionAudio })
+			for tab := TabLook; tab <= TabGeneral; tab++ {
+				show(fmt.Sprint("settings-", tab), func() { a.section, a.settingsTab = SectionSettings, tab })
+			}
+			// What comes up over the reader.
+			a.section, a.set.Mode = SectionRead, ModeVerses
+			settle()
+			open := func(name string, flag *bool) {
+				show(name, func() { *flag = true })
+				*flag = false
+				settle()
+			}
+			open("picker", &a.picker)
+			open("display", &a.quick)
+			a.focus = rules[0]
+			if a.sideGuide() {
+				open("guide", &a.set.Guide)
+				a.set.Guide = true
+			} else {
+				open("guide", &a.guideOpen)
+			}
+			a.focus = nil
+			a.openShare(ShareCard{Kind: CardVerse, Verse: a.quran.Verse(1, 1)})
+			show("share", func() {})
+			a.shareOpen = false
+			settle()
+			a.share = nil
+			// The introduction.
+			a.set.Onboarded = false
+			for step := 0; step < onboardSteps; step++ {
+				show(fmt.Sprint("onboarding-", step), func() { a.onboardStep = step })
+			}
+		})
 	}
 }

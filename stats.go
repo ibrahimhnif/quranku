@@ -379,7 +379,7 @@ var (
 	txtThisMonth      = T{"This month", "Bulan ini"}
 	txtThisYear       = T{"This year", "Tahun ini"}
 	txtRecapEmpty     = T{"Nothing read yet in this period. Your recap fills in as you read.", "Belum ada bacaan di periode ini. Rekapmu terisi seiring kamu membaca."}
-	txtRecapNotePhone = T{"Swipe through your cards, and share one as an image. Your numbers stay on this phone unless you share them.", "Geser untuk melihat kartu, lalu bagikan sebagai gambar. Angkamu tetap di HP ini kecuali kamu membagikannya."}
+	txtRecapNotePhone = T{"Swipe through your cards, and share one as an image. Your numbers stay on this device unless you share them.", "Geser untuk melihat kartu, lalu bagikan sebagai gambar. Angkamu tetap di perangkat ini kecuali kamu membagikannya."}
 	txtRecapNote      = T{"Pick a card to share as an image. Shared cards invite others to read; your numbers stay on this computer unless you share them.", "Pilih kartu untuk dibagikan sebagai gambar. Kartu mengajak orang lain ikut membaca; angkamu tetap di komputer ini kecuali kamu membagikannya."}
 	txtBadgesOf       = T{"%d of %d badges", "%d dari %d lencana"}
 	txtNotYet         = T{"Not yet", "Belum diraih"}
@@ -400,7 +400,7 @@ func (a *app) recapTab(c *ui.Context) {
 		return
 	}
 	note := txtRecapNote
-	if a.phone {
+	if a.touch {
 		note = txtRecapNotePhone
 	}
 	ui.Text(c, a.tx(note)).FontSize(13).TextColor(t.TextMuted).MaxWidth(720)
@@ -413,7 +413,7 @@ func (a *app) recapTab(c *ui.Context) {
 		cards = append(cards, ShareCard{Kind: CardHabit, Recap: r})
 	}
 	style := a.cardStyles()[0]
-	if a.phone {
+	if a.touch {
 		a.recapCarousel(c, cards, style)
 		return
 	}
@@ -436,6 +436,10 @@ func (a *app) badgesTab(c *ui.Context) {
 	t := c.Theme()
 	earned := a.reading.stats.Badges
 	ui.Textf(c, a.tx(txtBadgesOf), len(earned), len(badges)).FontSize(14).TextColor(t.TextMuted)
+	if a.phone {
+		a.phoneBadges(c, earned)
+		return
+	}
 	ui.Grid(c).Columns(a.indexColumns()).Gap(14).Children(func() {
 		for _, b := range badges {
 			day, ok := earned[b.ID]

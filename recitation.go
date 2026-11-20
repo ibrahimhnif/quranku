@@ -520,7 +520,8 @@ func (a *app) playing(v *Verse) bool {
 // Texts of the recitations.
 var (
 	txtRecitations  = T{"Recitations", "Murattal"}
-	txtRecIntro     = T{"Choose a reciter. Download surahs to listen offline, until you delete them; a verse not downloaded is fetched as it plays, and kept a week at most. Recitations: Quran data provided by Quran.Foundation.", "Pilih qari. Unduh surah untuk didengar tanpa internet, sampai kamu menghapusnya; ayat yang belum diunduh diambil saat diputar dan disimpan paling lama seminggu. Murattal: Quran data provided by Quran.Foundation."}
+	txtRecIntro     = T{"Choose a reciter, and download surahs to listen offline.", "Pilih qari, lalu unduh surah untuk didengar tanpa internet."}
+	txtRecTerms     = T{"Downloads stay until you delete them; a verse played without downloading is kept a week at most. Quran data provided by Quran.Foundation.", "Unduhan tersimpan sampai kamu menghapusnya; ayat yang diputar tanpa diunduh disimpan paling lama seminggu. Quran data provided by Quran.Foundation."}
 	txtReciter      = T{"Reciter", "Qari"}
 	txtDownload     = T{"Download", "Unduh"}
 	txtDownloadAll  = T{"Download all", "Unduh semua"}
@@ -554,7 +555,7 @@ func (a *app) recitationPage(c *ui.Context) {
 			ready++
 		}
 	}
-	if a.phone {
+	if a.phone || a.rail {
 		a.phoneRecitations(c, rec, ready)
 		return
 	}
@@ -563,7 +564,8 @@ func (a *app) recitationPage(c *ui.Context) {
 		ui.Scroll(c).Width(300).BorderWidth(0, 1, 0, 0).BorderColor(t.Border).Children(func() {
 			ui.Column(c).Padding(24, 16).Gap(4).Children(func() {
 				ui.Text(c, a.tx(txtRecitations)).FontSize(24).Bold().Padding(0, 8, 8, 8)
-				ui.Text(c, a.tx(txtRecIntro)).FontSize(12).TextColor(t.TextMuted).Padding(0, 8, 12, 8)
+				ui.Text(c, a.tx(txtRecIntro)).FontSize(12).TextColor(t.TextMuted).Padding(0, 8, 4, 8)
+				ui.Text(c, a.tx(txtRecTerms)).FontSize(10).TextColor(t.TextMuted.Alpha(0.8)).Padding(0, 8, 12, 8)
 				ui.Text(c, a.tx(txtReciter)).FontSize(11).Bold().TextColor(t.TextMuted).Padding(4, 8)
 				for _, r := range reciters {
 					row := ui.Row(c.Key(r.ID)).Padding(8, 10).Gap(8).Radius(8).Cursor(ui.CursorPointer)
@@ -629,7 +631,7 @@ func (a *app) phoneRecitations(c *ui.Context, rec *Reciter, ready int) {
 	ui.Column(c).Grow(1).Children(func() {
 		ui.Column(c).Padding(16, 16, 8, 16).Gap(10).Children(func() {
 			sectionTitle(c, a.tx(txtRecitations))
-			ui.Text(c, a.tx(txtRecIntro)).FontSize(12).TextColor(t.TextMuted)
+			ui.Text(c, a.tx(txtRecIntro)).FontSize(13).TextColor(t.TextMuted)
 			labels := make([]string, len(reciters))
 			for i := range reciters {
 				labels[i] = reciters[i].label()
@@ -646,6 +648,7 @@ func (a *app) phoneRecitations(c *ui.Context, rec *Reciter, ready int) {
 				ui.Textf(c, "%d / 114 %s", ready, a.tx(txtSurahsReady)).FontSize(12).TextColor(t.TextMuted).Grow(1)
 				a.downloadAllButton(c, rec, ready)
 			})
+			ui.Text(c, a.tx(txtRecTerms)).FontSize(10).TextColor(t.TextMuted.Alpha(0.8))
 			if a.rec.err != "" {
 				ui.Text(c, a.rec.err).FontSize(12).TextColor(t.Danger)
 			}

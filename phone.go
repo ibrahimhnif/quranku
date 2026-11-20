@@ -118,9 +118,11 @@ func (a *app) phoneReader(c *ui.Context) {
 		a.reader(c)
 	}
 	half := mobile.SheetOptions{Detents: []float32{0.6, 0.92}}
-	mobile.Sheet(c, &a.picker, half, func() { a.surahPicker(c) })
-	mobile.Sheet(c, &a.quick, half, func() {
-		ui.Scroll(c).Grow(1).Children(func() { a.quickDisplay(c) })
+	mobile.Sheet(c, &a.picker, half, func() {
+		ui.Column(c).Grow(1).Padding(4, 12, 0, 12).Children(func() { a.surahPicker(c) })
+	})
+	mobile.Sheet(c, &a.quick, mobile.SheetOptions{Detents: []float32{0.42, 0.7}}, func() {
+		ui.Scroll(c).Grow(1).Padding(4, 14, 16, 14).Children(func() { a.quickDisplay(c) })
 	})
 }
 
@@ -213,13 +215,16 @@ func (a *app) swipePages() bool { return a.phone || a.touch && !a.spread() }
 // phoneShare previews a card in a sheet, to share through the system's
 // share sheet or save to the phone.
 func (a *app) phoneShare(c *ui.Context, styles []Paper, style Paper) {
-	mobile.Sheet(c, &a.shareOpen, mobile.SheetOptions{Detents: []float32{0.92}, Label: a.tx(txtShare)}, func() {
+	// The card as large as the sheet holds over its controls, and the sheet
+	// as tall as they are.
+	w, h := c.Size()
+	_, _, bottom, _ := c.SafeArea()
+	const controls = 290 // the grabber, style, format, tajweed and buttons
+	unit := max(min((h*0.92-controls-bottom)/cardHeight(a.shareFormat), (w-40)/cardWidth), 0.3)
+	detent := min((unit*cardHeight(a.shareFormat)+controls+bottom)/h, 0.92)
+	mobile.Sheet(c, &a.shareOpen, mobile.SheetOptions{Detents: []float32{detent}, Label: a.tx(txtShare)}, func() {
 		ui.Scroll(c).Grow(1).Children(func() {
-			ui.Column(c).Padding(8, 20, 24, 20).Gap(14).Children(func() {
-				unit := float32(0.4)
-				if a.shareFormat == FormatPost {
-					unit = 0.6
-				}
+			ui.Column(c).Padding(8, 20, 16, 20).Gap(12).Children(func() {
 				ui.Column(c).AlignSelf(ui.Center).Radius(10).Clip().Shadow(0, 8, 28, 0, ui.RGBA(0, 0, 0, 0.18)).Children(func() {
 					a.cardView(c, *a.share, style, a.shareFormat, unit)
 				})
@@ -228,7 +233,7 @@ func (a *app) phoneShare(c *ui.Context, styles []Paper, style Paper) {
 					if labeledButton(c, iconShare, a.tx(txtShare), true).Grow(1).Basis(0).Clicked() {
 						a.shareCardFile(c, *a.share, style, a.shareFormat, false)
 					}
-					if labeledButton(c, iconDownload, a.tx(txtSaveImage), false).Grow(1).Basis(0).Clicked() {
+					if labeledButton(c, iconDownload, a.tx(txtSave), false).Grow(1).Basis(0).Clicked() {
 						a.shareCardFile(c, *a.share, style, a.shareFormat, true)
 					}
 				})
@@ -351,8 +356,10 @@ func (a *app) tabRow(c *ui.Context, selected *int, labels ...string) bool {
 // recapCarousel shows the recap's cards side by side, a finger swiping from
 // one to the next, the next peeking in at the edge.
 func (a *app) recapCarousel(c *ui.Context, cards []ShareCard, style Paper) {
-	// Cards of a size the screen shows whole, with the next one's edge.
-	w := max(a.contentWidth(c, 600)*0.62, 180)
+	// Cards of a size the screen shows whole, with the next one's edge,
+	// and their button.
+	_, h := c.Size()
+	w := max(min(a.contentWidth(c, 600)*0.62, (h-340)*cardWidth/cardHeight(FormatStory)), 180)
 	unit := w / cardWidth
 	ui.ScrollHorizontal(c).ScrollSnap(ui.SnapMandatory).Margin(0, -16, 0, -16).Padding(0, 16, 4, 16).Gap(12).Children(func() {
 		for i, card := range cards {
@@ -425,6 +432,37 @@ func (a *app) railItem(c *ui.Context, id int, svg *ui.SVG, label string) {
 		l := ui.Text(c, label).FontSize(11).TextColor(col).NoWrap()
 		if chosen {
 			l.Bold()
+		}
+	})
+}
+
+// phoneBadges shows the badges two a row, each its icon, name and what
+// earns it.
+func (a *app) phoneBadges(c *ui.Context, earned map[string]string) {
+	t := c.Theme()
+	ui.Grid(c).Columns(2).Gap(10).Children(func() {
+		for _, b := range badges {
+			_, ok := earned[b.ID]
+			tile := ui.Column(c.Key(b.ID)).Padding(14, 12).Gap(6).Radius(14).Background(t.Surface).Border(1, t.Border).AlignItems(ui.Center)
+			if !ok {
+				tile.Opacity(0.55)
+			}
+			if ok && tile.Clicked() {
+				a.openShare(ShareCard{Kind: CardBadge, Badge: b})
+			}
+			tile.Children(func() {
+				circle := ui.Column(c).Size(40, 40).Radius(20).Justify(ui.Center).AlignItems(ui.Center)
+				col := t.TextMuted
+				if ok {
+					circle.Background(t.Accent.Alpha(0.14))
+					col = t.Accent
+				} else {
+					circle.Background(t.Background)
+				}
+				circle.Children(func() { ui.Icon(c, b.Icon).FontSize(20).TextColor(col) })
+				ui.Text(c, a.tx(b.Name)).FontSize(13).Bold().TextAlign(ui.Center)
+				ui.Text(c, a.tx(b.Desc)).FontSize(11).TextColor(t.TextMuted).TextAlign(ui.Center).LineHeight(1.35)
+			})
 		}
 	})
 }

@@ -223,12 +223,18 @@ func (a *app) shufflePage(c *ui.Context) {
 func (a *app) passageCard(c *ui.Context, p Passage) {
 	t := c.Theme()
 	first := a.quran.All[p.First]
-	ui.Column(c).Padding(20).Gap(10).Radius(12).Background(t.Background).Border(1, t.Border).Children(func() {
-		ui.Row(c).Gap(10).AlignItems(ui.Center).Children(func() {
+	pad := float32(20)
+	if a.phone {
+		pad = 14
+	}
+	ui.Column(c).Padding(pad).Gap(10).Radius(12).Background(t.Background).Border(1, t.Border).Children(func() {
+		name := func() {
 			ui.Column(c).Grow(1).Gap(2).Children(func() {
 				ui.Text(c, a.passageName(p)).FontSize(17).Bold()
 				ui.Textf(c, "%s %d · %s %d", a.tx(txtJuz), first.Juz, a.tx(txtPageN), first.Page).FontSize(12).TextColor(t.TextMuted)
 			})
+		}
+		buttons := func() {
 			if labeledButton(c, iconPlay, a.tx(txtPlay), false).Clicked() {
 				a.playFrom(first.Surah, first.Number, a.quran.All[p.First+p.Count-1].Number)
 			}
@@ -238,7 +244,17 @@ func (a *app) passageCard(c *ui.Context, p Passage) {
 			if ui.Button(c, a.tx(txtOpenMushaf)).Clicked() {
 				a.openVerse(first, ModeMushaf)
 			}
-		})
+		}
+		if a.phone {
+			// The passage's name over its buttons.
+			name()
+			ui.Row(c).Gap(8).Wrap().Children(buttons)
+		} else {
+			ui.Row(c).Gap(10).AlignItems(ui.Center).Children(func() {
+				name()
+				buttons()
+			})
+		}
 		if a.shuf.hide && !a.revealed {
 			ui.Column(c).Padding(30).Gap(12).AlignItems(ui.Center).Children(func() {
 				ui.Text(c, a.tx(txtHiddenHint)).TextColor(t.TextMuted)
