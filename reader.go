@@ -150,7 +150,7 @@ func (a *app) segmentsQuiet(c *ui.Context, segs []Segment, quiet bool) {
 		el.Cursor(ui.CursorPointer).TextColor(col.Alpha(alpha))
 		if el.Clicked() {
 			a.focus = r
-			if a.phone {
+			if !a.sideGuide() {
 				a.guideOpen = true // in a sheet, over the text
 			} else {
 				a.set.Guide = true

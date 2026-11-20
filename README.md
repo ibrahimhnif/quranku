@@ -77,16 +77,20 @@ go tool mygo build    # package the app into build/
 
 With [devbox](https://www.jetify.com/devbox), `devbox shell` provides Go.
 
-### Phones (in progress)
+### Phones and tablets (in progress)
 
-The same app runs on iPhone and Android, laid out for a phone: a bar of tabs,
-the reader's controls in sheets, and the system's share sheet for cards.
+The same app runs on iPhone, iPad and Android. Narrower than 700 points, it
+is laid out for a phone: a bar of tabs, the reader's controls in sheets. A
+tablet gets the desktop's layout, with a rail of sections when upright
+(under 1000 points) and the tajweed guide in a sheet there. On both, the
+Mushaf's pages turn with a finger and cards go to the system's share sheet.
 
 ```sh
 QURANKU_PHONE=1 go tool mygo dev           # the phone's layout, on the desktop
+QURANKU_TABLET=1 go tool mygo dev          # a tablet's, in a window to resize
 scripts/mygo-mobile.sh dev -platform ios      # the iOS simulator (needs Xcode)
 scripts/mygo-mobile.sh dev -platform android  # an emulator or device (needs Android Studio and its NDK)
-QURANKU_SHOTS=/tmp go test -run TestPhoneScreens   # screenshots of each screen
+QURANKU_SHOTS=/tmp go test -run 'TestPhoneScreens|TestTabletScreens'   # screenshots of each screen
 ```
 
 `scripts/mygo-mobile.sh` runs the MyGo CLI with Xcode's toolchain: inside

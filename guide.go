@@ -44,7 +44,11 @@ func (a *app) guideContent(c *ui.Context) {
 			if a.focus != nil {
 				a.ruleDetail(c, a.focus, counts[a.focus], countText)
 			} else {
-				ui.Text(c, a.tx(txtHint)).FontSize(12).TextColor(t.TextMuted)
+				hint := txtHint
+				if a.touch {
+					hint = txtHintTouch
+				}
+				ui.Text(c, a.tx(hint)).FontSize(12).TextColor(t.TextMuted)
 			}
 			for _, g := range ruleGroups {
 				ui.Column(c).Gap(2).Children(func() {

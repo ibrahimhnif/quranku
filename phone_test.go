@@ -14,7 +14,7 @@ import (
 // phoneTester shows the app on an iPhone's screen: 393×852 points, its
 // status bar and home indicator around the safe area.
 func phoneTester(a *app) *ui.Tester {
-	a.phone = true
+	a.touch = true
 	tt := ui.NewTester(a.view, 393, 852)
 	tt.SetInsets(59, 0, 34, 0)
 	tt.Frame()
@@ -181,4 +181,58 @@ func TestPhoneGestures(t *testing.T) {
 		tt.Frame()
 	}
 	turn(250, 101)
+}
+
+// TestTabletScreens builds the sections on an iPad's screen, across and
+// upright. With QURANKU_SHOTS set to a directory, it saves them there.
+func TestTabletScreens(t *testing.T) {
+	for _, o := range []struct {
+		name string
+		w, h int
+		rail bool
+	}{{"landscape", 1180, 820, false}, {"portrait", 820, 1180, true}} {
+		a := newApp(loadTestQuran(t), defaultSettings(), "")
+		a.set.Onboarded, a.touch = true, true
+		for n := 1; n <= 12; n++ {
+			a.reading.markRead(a.quran.Verse(2, n), a.now())
+		}
+		tt := ui.NewTester(a.view, o.w, o.h)
+		tt.SetInsets(24, 0, 20, 0)
+		tt.Frame()
+		if a.phone || a.rail != o.rail {
+			t.Fatalf("%s: phone %v, rail %v", o.name, a.phone, a.rail)
+		}
+		for _, s := range []struct {
+			name    string
+			section int
+			mode    int
+		}{
+			{"home", SectionHome, 0},
+			{"read-verses", SectionRead, ModeVerses},
+			{"read-mushaf", SectionRead, ModeMushaf},
+			{"recitations", SectionAudio, 0},
+			{"stats", SectionStats, 0},
+			{"settings", SectionSettings, 0},
+		} {
+			a.section = s.section
+			if s.section == SectionRead {
+				a.set.Mode = s.mode
+				if s.mode == ModeMushaf {
+					tt.Frame()
+					a.goPage(50)
+				}
+			}
+			for range 3 {
+				tt.Frame()
+			}
+			if dir := os.Getenv("QURANKU_SHOTS"); dir != "" {
+				f, err := os.Create(filepath.Join(dir, "tablet-"+o.name+"-"+s.name+".png"))
+				if err != nil {
+					t.Fatal(err)
+				}
+				png.Encode(f, tt.Image())
+				f.Close()
+			}
+		}
+	}
 }

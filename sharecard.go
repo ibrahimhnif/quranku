@@ -369,6 +369,20 @@ func (a *app) shareDialog(c *ui.Context) {
 				a.shareOptions(c, styles)
 				ui.Textf(c, a.tx(txtImageSize), cardWidth*2, int(cardHeight(a.shareFormat))*2).FontSize(11).TextColor(t.TextMuted)
 				ui.Spacer(c)
+				if a.touch {
+					// A tablet shares through the system's sheet, and saves
+					// to its files.
+					if labeledButton(c, iconShare, a.tx(txtShare), true).Clicked() {
+						a.shareCardFile(c, *a.share, style, a.shareFormat, false)
+					}
+					if labeledButton(c, iconDownload, a.tx(txtSaveImage), false).Clicked() {
+						a.shareCardFile(c, *a.share, style, a.shareFormat, true)
+					}
+					if ui.Button(c, a.tx(txtClose)).Clicked() {
+						a.shareOpen = false
+					}
+					return
+				}
 				if labeledButton(c, iconDownload, a.tx(txtSaveImage), true).Clicked() {
 					a.saveCard(c, *a.share, style, a.shareFormat)
 				}

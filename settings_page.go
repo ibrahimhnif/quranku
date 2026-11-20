@@ -118,7 +118,7 @@ func (a *app) settingsArabic(c *ui.Context) {
 	})
 	a.settingsSection(c, txtTajweed, func() {
 		a.settingRow(c, "colors", &a.set.Colors, a.tx(txtTajweedColors))
-		if !a.phone { // a phone shows the guide as a letter is tapped
+		if a.sideGuide() { // narrower, the guide shows as a letter is tapped
 			a.settingRow(c, "guide", &a.set.Guide, a.tx(txtTajweedGuide))
 		}
 	})

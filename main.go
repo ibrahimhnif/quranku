@@ -91,7 +91,9 @@ type app struct {
 	// clock. Tests replace them.
 	post               func(func())
 	media              bool             // the system's media controls show what plays
+	touch              bool             // a finger drives it: a phone or a tablet
 	phone              bool             // laid out for a phone's screen
+	rail               bool             // on a narrow tablet, the sections in a rail
 	guideOpen          bool             // on a phone, the guide's sheet shows
 	pager              mobile.PageState // on a phone, the Mushaf's pages a finger turns
 	pagerGen           int              // a new pager for each jump
@@ -203,6 +205,7 @@ func (a *app) view(c *ui.Context) {
 		a.settingsChanged()
 	}
 	a.ensureTranslation()
+	a.fitScreen(c)
 	a.pal = a.applyTheme(c)
 
 	if !a.set.Onboarded {
@@ -232,10 +235,13 @@ func (a *app) view(c *ui.Context) {
 				}
 				a.playerBar(c)
 			})
-			if a.set.Guide && a.section == SectionShuffle {
+			if a.set.Guide && a.sideGuide() && a.section == SectionShuffle {
 				a.guidePanel(c)
 			}
 		})
+	}
+	if a.touch && !a.phone {
+		a.guideSheet(c) // on a narrow tablet, a tapped letter's rule
 	}
 	a.shareDialog(c)
 	a.announce(c)
@@ -291,7 +297,7 @@ func (a *app) readerView(c *ui.Context) {
 			}
 			a.playerBar(c)
 		})
-		if a.set.Guide {
+		if a.set.Guide && a.sideGuide() {
 			a.guidePanel(c)
 		}
 	})
@@ -315,7 +321,12 @@ var (
 // sidebar holds the sections.
 func (a *app) sidebar(c *ui.Context) {
 	t := c.Theme()
-	ui.Column(c).Width(224).Padding(20, 14).Gap(4).Background(t.Surface).BorderWidth(0, 1, 0, 0).BorderColor(t.Border).Children(func() {
+	if a.rail {
+		a.navRail(c)
+		return
+	}
+	top, _, bottom, _ := c.SafeArea()
+	ui.Column(c).Width(224).Padding(20+top, 14, 20+bottom, 14).Margin(-top, 0, -bottom, 0).Gap(4).Background(t.Surface).BorderWidth(0, 1, 0, 0).BorderColor(t.Border).Children(func() {
 		ui.Row(c).Gap(8).AlignItems(ui.Center).Padding(0, 8, 18, 8).Children(func() {
 			ui.Text(c, "Quranku").FontSize(19).Bold()
 			ui.Text(c, "قرآنكو").Font(quranFont).FontSize(19).TextColor(t.TextMuted)
@@ -333,6 +344,9 @@ func (a *app) sidebar(c *ui.Context) {
 func (a *app) navItem(c *ui.Context, id int, svg *ui.SVG, label string) {
 	t := c.Theme()
 	row := ui.Row(c.Key(fmt.Sprint("nav", id))).Padding(8, 10).Gap(12).AlignItems(ui.Center).Radius(8).Cursor(ui.CursorPointer).Label(label)
+	if a.touch {
+		row.Padding(12, 12) // a fingertip's height
+	}
 	chosen := a.section == id
 	switch {
 	case chosen:
@@ -433,8 +447,8 @@ func (a *app) surahPicker(c *ui.Context) {
 	}
 	box.Children(func() {
 		search := ui.SearchField(c, &a.pickerQuery).Placeholder(a.tx(txtSearch))
-		if !a.phone {
-			search.AutoFocus() // on a phone, the keyboard would cover the list
+		if !a.touch {
+			search.AutoFocus() // on a touch screen, the keyboard would cover the list
 		}
 		results := a.quran.Search(a.pickerQuery)
 		ui.List(c, &a.surahs, len(results), func(i int) {
@@ -478,7 +492,7 @@ func (a *app) quickDisplay(c *ui.Context) {
 		a.sliderRow(c, a.tx(txtLineSpacing), &a.set.LineSpacing, 1.5, 3)
 		a.settingRow(c, "q-translation", &a.set.Translation, a.tx(txtTranslation))
 		a.settingRow(c, "q-colors", &a.set.Colors, a.tx(txtTajweedColors))
-		if !a.phone {
+		if a.sideGuide() {
 			a.settingRow(c, "q-guide", &a.set.Guide, a.tx(txtTajweedGuide))
 		}
 		if a.set.Mode == ModeMushaf && !a.phone {
@@ -671,7 +685,7 @@ func main() {
 	}
 	a := newApp(q, loadSettings(settingsFile), dataDir)
 	a.file = settingsFile
-	a.phone = onPhone()
+	a.touch = onTouch()
 	mygo.App.WhenReady(func() {
 		opts := mygo.WindowOptions{
 			Title:     "Quranku",
@@ -682,11 +696,15 @@ func main() {
 			StateKey:  "main",
 			Content:   ui.View(a.view),
 		}
-		if a.phone {
-			// On a desktop, the phone's layout shows in a window of a
-			// phone's size; phones fill the screen whatever it says.
+		// On a desktop, a phone's or a tablet's layout shows in a window of
+		// its size; phones and tablets fill the screen whatever it says.
+		switch {
+		case os.Getenv("QURANKU_PHONE") == "1":
 			opts.Width, opts.Height, opts.MinWidth, opts.MinHeight = 393, 852, 340, 560
 			opts.StateKey = "phone"
+		case os.Getenv("QURANKU_TABLET") == "1":
+			opts.Width, opts.Height, opts.MinWidth, opts.MinHeight = 1180, 820, 600, 600
+			opts.StateKey = "tablet"
 		}
 		win := mygo.NewWindow(opts)
 		a.post = win.Update

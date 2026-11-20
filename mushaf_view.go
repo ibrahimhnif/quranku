@@ -51,7 +51,7 @@ func (a *app) shownPages() []*Page {
 
 // mushaf shows the Mushaf's page, or two side by side as an open book.
 func (a *app) mushaf(c *ui.Context) {
-	if a.phone {
+	if a.swipePages() {
 		a.phoneMushaf(c)
 		return
 	}

@@ -11,10 +11,29 @@ import (
 	"github.com/egoist/mygo/ui/mobile"
 )
 
-// onPhone reports whether the app runs on a phone or a tablet. On a
-// desktop, QURANKU_PHONE=1 shows the phone's layout, to work on it.
-func onPhone() bool {
-	return runtime.GOOS == "ios" || runtime.GOOS == "android" || os.Getenv("QURANKU_PHONE") == "1"
+// onTouch reports whether the app runs on a phone or a tablet, which a
+// finger drives. On a desktop, QURANKU_PHONE=1 or QURANKU_TABLET=1 shows
+// their layouts, to work on them.
+func onTouch() bool {
+	return runtime.GOOS == "ios" || runtime.GOOS == "android" || os.Getenv("QURANKU_PHONE") == "1" || os.Getenv("QURANKU_TABLET") == "1"
+}
+
+// Below compactWidth a touch screen is a phone's: a section at a time over
+// a bar of tabs. Wider, a tablet's: the sections beside a rail, or below
+// railWidth the sidebar, as on a desktop.
+const (
+	compactWidth = 700
+	railWidth    = 1000
+)
+
+// fitScreen lays a touch screen out for its width, as it turns or splits.
+func (a *app) fitScreen(c *ui.Context) {
+	if !a.touch {
+		return
+	}
+	w, _ := c.Size()
+	a.phone = w < compactWidth
+	a.rail = !a.phone && w < railWidth
 }
 
 // phoneTabs are the sections of the bar of tabs, in order. Shuffle opens
@@ -74,11 +93,20 @@ func (a *app) phoneView(c *ui.Context) {
 			}
 		}
 	})
-	// A colored letter tapped anywhere explains its rule.
+	a.guideSheet(c)
+}
+
+// guideSheet explains the rule of a colored letter tapped anywhere, in a
+// sheet, where the screen has no room for the guide beside the text.
+func (a *app) guideSheet(c *ui.Context) {
 	mobile.Sheet(c, &a.guideOpen, mobile.SheetOptions{Detents: []float32{0.6, 0.92}}, func() {
 		ui.Scroll(c).Grow(1).Children(func() { a.guideContent(c) })
 	})
 }
+
+// sideGuide reports whether the tajweed guide can show beside the text:
+// not on a phone, nor on a narrow tablet.
+func (a *app) sideGuide() bool { return !a.phone && !a.rail }
 
 // phoneReader is the reader on a phone: its bar above the text, and the
 // surah picker, the display and the guide to a rule in sheets.
@@ -177,6 +205,10 @@ func (a *app) phonePageNav(c *ui.Context) {
 // spread reports whether the Mushaf shows two pages side by side: never on
 // a phone, whose screen holds one.
 func (a *app) spread() bool { return a.set.Spread && !a.phone }
+
+// swipePages reports whether a finger turns the Mushaf's pages: on a touch
+// screen, a page at a time.
+func (a *app) swipePages() bool { return a.phone || a.touch && !a.spread() }
 
 // phoneShare previews a card in a sheet, to share through the system's
 // share sheet or save to the phone.
@@ -349,4 +381,50 @@ func (a *app) lineHeight() float32 {
 		h = 1 + (h-1)*0.7
 	}
 	return h
+}
+
+// navRail holds the sections on a narrow tablet: an icon over its name,
+// down the side, as Material's navigation rail.
+func (a *app) navRail(c *ui.Context) {
+	t := c.Theme()
+	// Its color goes on under the system's bars.
+	top, _, bottom, _ := c.SafeArea()
+	ui.Column(c).Width(84).Padding(16+top, 6, 16+bottom, 6).Margin(-top, 0, -bottom, 0).Gap(6).AlignItems(ui.Stretch).Background(t.Surface).
+		BorderWidth(0, 1, 0, 0).BorderColor(t.Border).Role(ui.RoleTabList).Children(func() {
+		ui.Text(c, "قرآنكو").Font(quranFont).FontSize(20).TextColor(t.Accent).AlignSelf(ui.Center).Padding(0, 0, 10, 0)
+		a.railItem(c, SectionHome, iconHome, a.tx(txtHome))
+		a.railItem(c, SectionRead, iconRead, a.tx(txtRead))
+		a.railItem(c, SectionShuffle, iconShuffle, a.tx(txtShuffle))
+		a.railItem(c, SectionStats, iconStats, a.tx(txtStats))
+		a.railItem(c, SectionAudio, iconListen, a.tx(txtRecitations))
+		ui.Spacer(c)
+		a.railItem(c, SectionSettings, iconSettings, a.tx(txtSettings))
+	})
+}
+
+func (a *app) railItem(c *ui.Context, id int, svg *ui.SVG, label string) {
+	t := c.Theme()
+	chosen := a.section == id
+	item := ui.Column(c.Key(fmt.Sprint("rail", id))).Gap(4).Padding(4, 0, 6, 0).AlignItems(ui.Center).
+		Role(ui.RoleTab).Label(label).Checked(chosen)
+	if item.Clicked() {
+		if id == SectionRead {
+			a.continueReading(a.set.Mode)
+		} else {
+			a.section = id
+		}
+	}
+	item.Children(func() {
+		col := t.TextMuted
+		pill := ui.Row(c).Width(56).Height(32).Radius(16).Justify(ui.Center).AlignItems(ui.Center)
+		if chosen {
+			col = t.Accent
+			pill.Background(t.Accent.Alpha(0.14))
+		}
+		pill.Children(func() { ui.Icon(c, svg).FontSize(20).TextColor(col) })
+		l := ui.Text(c, label).FontSize(11).TextColor(col).NoWrap()
+		if chosen {
+			l.Bold()
+		}
+	})
 }

@@ -23,7 +23,11 @@ var (
 	txtLanguage    = T{"Language", "Bahasa"}
 	txtGuideTitle  = T{"Tajweed guide", "Panduan Tajwid"}
 	txtShowAll     = T{"Show all", "Tampilkan semua"}
-	txtHint        = T{
+	txtHintTouch   = T{
+		"Tap a colored letter to see its rule. Tap a rule to study it on its own.",
+		"Ketuk huruf berwarna untuk melihat hukumnya. Ketuk sebuah hukum untuk mempelajarinya secara khusus.",
+	}
+	txtHint = T{
 		"Hover a colored letter to see its rule. Click a rule to study it on its own.",
 		"Arahkan kursor ke huruf berwarna untuk melihat hukumnya. Klik sebuah hukum untuk mempelajarinya secara khusus.",
 	}
