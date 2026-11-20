@@ -221,6 +221,7 @@ func (a *app) saveTheme(d themeDraft) {
 func (a *app) translationChooser(c *ui.Context) {
 	t := c.Theme()
 	tr := a.trans
+	ui.Text(c, a.tx(txtTransKept)).FontSize(12).TextColor(t.TextMuted).Padding(0, 10, 4, 10)
 	row := func(key string, label, detail string, chosen bool, action func()) {
 		r := ui.Row(c.Key(key)).Padding(6, 10).Gap(10).AlignItems(ui.Center).Radius(8)
 		if chosen {
@@ -299,4 +300,9 @@ func (a *app) translationChooser(c *ui.Context) {
 			}
 		})
 	}
+}
+
+var txtTransKept = T{
+	"Translations other than Pickthall's come from Quran.Foundation (Quran data provided by Quran.Foundation). They are kept a week at most, and fetched again when online.",
+	"Terjemahan selain Pickthall berasal dari Quran.Foundation (Quran data provided by Quran.Foundation). Disimpan paling lama seminggu, lalu diunduh ulang otomatis saat online.",
 }

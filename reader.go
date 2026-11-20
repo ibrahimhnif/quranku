@@ -41,6 +41,9 @@ func (a *app) surahHeader(c *ui.Context, s *Surah) {
 	ui.Column(c).Padding(top, 0, 8, 0).Gap(6).AlignItems(ui.Center).Children(func() {
 		ui.Text(c, "سورة "+s.Arabic).Font(quranFont).FontSize(title).TextColor(t.Accent)
 		ui.Textf(c, "%s — %s", s.Name, a.tx(s.Meaning)).FontSize(14).TextColor(t.TextMuted)
+		if credit := a.translationCredit(); credit != "" && a.set.Translation {
+			ui.Text(c, credit).FontSize(11).TextColor(t.TextMuted).TextAlign(ui.Center)
+		}
 		if s.Bismillah {
 			ui.Box(c).Height(12)
 			a.arabic(c, a.quran.Basmalah, 0).TextAlign(ui.Center).AlignSelf(ui.Stretch)

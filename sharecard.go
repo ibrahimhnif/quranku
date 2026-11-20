@@ -316,6 +316,9 @@ func (a *app) cardBody(c *ui.Context, card ShareCard, p Paper, format int, unit 
 			tsize = 13
 		}
 		ui.Text(c, trans).FontSize(u(tsize)).LineHeight(1.5).TextColor(muted).MaxLines(map[bool]int{true: 6, false: 12}[post])
+		if credit := a.translationCredit(); credit != "" {
+			ui.Text(c, credit).FontSize(u(10)).TextColor(muted.Alpha(0.8))
+		}
 	case CardBadge:
 		b := card.Badge
 		ui.Column(c).Size(big(96), big(96)).Radius(big(48)).Background(accent.Alpha(0.14)).Justify(ui.Center).AlignItems(ui.Center).Children(func() {

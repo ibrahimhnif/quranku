@@ -584,12 +584,25 @@ func TestRecitation(t *testing.T) {
 		t.Errorf("verse %d after a repeat", a.rec.play.verse)
 	}
 	a.stopPlayback()
-	// A verse not downloaded is fetched as it plays.
+	// A verse not downloaded is fetched as it plays, into the cache, which
+	// keeps it a week at most: it is not a download.
 	a.set.Repeat = RepeatOff
 	a.playFrom(1, 3, 3)
 	settle()
-	if a.rec.play == nil || a.rec.play.loading || a.rec.play.err != "" || !a.rec.has(7, 1, 3) {
+	if a.rec.play == nil || a.rec.play.loading || a.rec.play.err != "" {
 		t.Fatalf("streaming 1:3: %+v", a.rec.play)
+	}
+	if a.rec.has(7, 1, 3) || a.rec.source(7, 1, 3) != a.rec.cachePath(7, 1, 3) {
+		t.Errorf("1:3 streamed: downloaded %v, plays from %q", a.rec.has(7, 1, 3), a.rec.source(7, 1, 3))
+	}
+	old := time.Now().Add(-8 * 24 * time.Hour)
+	os.Chtimes(a.rec.cachePath(7, 1, 3), old, old)
+	if a.rec.source(7, 1, 3) != "" {
+		t.Error("a verse cached over a week ago still plays from the cache")
+	}
+	pruneOlder(a.rec.cache, time.Now().Add(-maxCacheAge))
+	if _, err := os.Stat(a.rec.cachePath(7, 1, 3)); !os.IsNotExist(err) {
+		t.Errorf("a verse cached over a week ago is kept: %v", err)
 	}
 	a.deleteSurahAudio(7, ikhlas)
 	if n := a.audioCount(7, ikhlas); n != 0 {
@@ -966,5 +979,27 @@ func TestMushafZoom(t *testing.T) {
 	tt.Key(ui.Cmd, ui.Key0)
 	if a.set.MushafZoom != 1 {
 		t.Errorf("⌘0 left %v", a.set.MushafZoom)
+	}
+}
+
+// TestTranslationsExpire keeps Quran Foundation's translations a week at
+// most: fetched again after six days, deleted after seven.
+func TestTranslationsExpire(t *testing.T) {
+	dir := t.TempDir()
+	tr := newTranslations(dir)
+	os.MkdirAll(tr.dir, 0o755)
+	os.WriteFile(tr.path(33), []byte("[]"), 0o644)
+	if tr.stale(33) || !tr.installed(33) {
+		t.Fatalf("a new translation: stale %v, installed %v", tr.stale(33), tr.installed(33))
+	}
+	at := time.Now().Add(-6*24*time.Hour - time.Hour)
+	os.Chtimes(tr.path(33), at, at)
+	if !tr.stale(33) {
+		t.Error("a translation six days old is not fetched again")
+	}
+	at = time.Now().Add(-8 * 24 * time.Hour)
+	os.Chtimes(tr.path(33), at, at)
+	if newTranslations(dir).installed(33) {
+		t.Error("a translation eight days old is kept")
 	}
 }

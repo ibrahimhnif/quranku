@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"time"
 )
 
 // TranslationInfo describes a translation quran.com offers.
@@ -46,8 +47,19 @@ func newTranslations(dataDir string) *translations {
 	tr := &translations{loaded: map[int][]string{}, fetching: map[int]bool{}, tried: map[int]bool{}}
 	if dataDir != "" {
 		tr.dir = filepath.Join(dataDir, "translations")
+		pruneOlder(tr.dir, time.Now().Add(-maxCacheAge))
 	}
 	return tr
+}
+
+// stale reports whether translation id was downloaded long enough ago to
+// fetch again: Quran Foundation's terms keep its data a week at most.
+func (tr *translations) stale(id int) bool {
+	if id == pickthallID || tr.dir == "" {
+		return false
+	}
+	fi, err := os.Stat(tr.path(id))
+	return err == nil && time.Since(fi.ModTime()) > refreshAge
 }
 
 func (tr *translations) path(id int) string {
@@ -108,11 +120,11 @@ func (a *app) translationText(v *Verse) string {
 }
 
 // ensureTranslation downloads the translation of the app's language, once,
-// when it is not there.
+// when it is not there, and fetches it again as it gets old.
 func (a *app) ensureTranslation() {
 	tr := a.trans
 	id := a.translationID()
-	if tr.dir == "" || tr.tried[id] || tr.fetching[id] || tr.installed(id) {
+	if tr.dir == "" || tr.tried[id] || tr.fetching[id] || tr.installed(id) && !tr.stale(id) {
 		return
 	}
 	tr.tried[id] = true
@@ -130,7 +142,24 @@ func (a *app) translationName() string {
 			return t.Name
 		}
 	}
+	if id == kemenagID {
+		return "Kementerian Agama RI" // before the catalog loads
+	}
 	return fmt.Sprint(id)
+}
+
+// qfAttribution is Quran Foundation's credit for what its API gives.
+const qfAttribution = "Quran data provided by Quran.Foundation"
+
+// translationCredit credits the translation shown by name, and Quran
+// Foundation for one from its API; "" for Pickthall's, which Quranku
+// carries.
+func (a *app) translationCredit() string {
+	id := a.translationID()
+	if id == pickthallID || !a.trans.installed(id) {
+		return ""
+	}
+	return fmt.Sprintf("%s: %s · %s", a.tx(txtTranslation), a.translationName(), qfAttribution)
 }
 
 // loadCatalog fetches the translations quran.com offers, in the

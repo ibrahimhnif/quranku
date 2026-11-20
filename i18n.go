@@ -30,8 +30,8 @@ var (
 	txtLearnMore = T{"Click to learn more", "Klik untuk mempelajari lebih lanjut"}
 	txtInSurah   = T{"%d in this surah", "%d kali di surah ini"}
 	txtCredits   = T{
-		"Quran text and Mushaf pages: Tanzil (tanzil.net). Tajweed: quran-tajweed by Collin Fair (CC BY 4.0). Translations and recitations: quran.com. Fonts: Amiri Quran, Scheherazade New.",
-		"Teks Al-Qur'an dan halaman mushaf: Tanzil (tanzil.net). Tajwid: quran-tajweed oleh Collin Fair (CC BY 4.0). Terjemahan dan murattal: quran.com. Font: Amiri Quran, Scheherazade New.",
+		"Quran text and Mushaf pages: Tanzil (tanzil.net). Tajweed: quran-tajweed by Collin Fair (CC BY 4.0). Translations (other than Pickthall's) and recitations: Quran data provided by Quran.Foundation, each credited by name. Fonts: Amiri Quran, Scheherazade New.",
+		"Teks Al-Qur'an dan halaman mushaf: Tanzil (tanzil.net). Tajwid: quran-tajweed oleh Collin Fair (CC BY 4.0). Terjemahan (selain Pickthall) dan murattal: Quran data provided by Quran.Foundation, masing-masing disebut namanya. Font: Amiri Quran, Scheherazade New.",
 	}
 )
 

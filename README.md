@@ -112,9 +112,13 @@ The Mushaf's line breaks are Quranku's own: each page holds the verses of the
 printed page, spread evenly over its 15 lines.
 
 Recitations and other translations (Kemenag RI's Indonesian among them,
-fetched when the app is in Indonesian) are downloaded at runtime into the app's
-user data folder, with `settings.json` and `stats.json`. Nothing leaves your
-computer unless you save or copy a share card yourself.
+fetched when the app is in Indonesian) come from Quran Foundation's API at
+runtime: Quran data provided by Quran.Foundation. As its terms say,
+translations are kept a week at most and fetched again, recitations stay only
+when you download them (verses played without downloading are cached a week
+at most), and each translation and reciter is credited by name. They go into
+the app's user data folder, with `settings.json` and `stats.json`. Nothing
+leaves your device unless you save or share a card yourself.
 
 ## Project layout
 

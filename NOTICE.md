@@ -21,11 +21,23 @@ not the printed Mushaf's.
 
 ## Downloaded at runtime
 
-On the user's request, or for the app's language, Quranku downloads
-translations (the Kementerian Agama RI Indonesian translation among them) and
-verse-by-verse recitations from the [quran.com](https://quran.com) API and
-audio CDN into the user's own data folder. They are not part of this
-repository and keep their publishers' terms.
+Quran data provided by Quran.Foundation. On the user's request, or for the
+app's language, Quranku downloads translations (the Kementerian Agama RI
+Indonesian translation among them) and verse-by-verse recitations from the
+[Quran Foundation](https://quran.foundation) API and audio CDN into the app's
+own data folder. They are not part of this repository, and the app credits
+each translation and reciter by name.
+
+As Quran Foundation's [Developer Terms](https://api-docs.quran.foundation/legal/developer-terms/)
+and its [guidance on offline recitations](https://api-docs.quran.foundation/docs/tutorials/faq#can-my-app-let-users-download-recitations-for-offline-listening)
+say:
+
+- Translations are kept a week at most, and fetched again when online.
+- Recitations the user chose to download stay in the app's data folder until
+  the user deletes them. A verse played without being downloaded is kept in
+  a cache for a week at most.
+- Quranku deletes these files when the user removes them, or when Quran
+  Foundation asks.
 
 If you hold rights to any of this content and want it changed or removed,
 please open an issue.

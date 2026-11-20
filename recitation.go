@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/egoist/mygo/audio"
 	_ "github.com/egoist/mygo/audio/mp3" // the recitations are MP3
@@ -88,6 +89,7 @@ type recitation struct {
 	counts map[surahKey]int // files on disk, as last counted
 	err    string
 	open   func(path string) (sound, error)
+	cache  string // verses played without being downloaded
 
 	play *playback
 	gen  int // which playback a sound's end belongs to
@@ -108,12 +110,38 @@ func newRecitation(dataDir string) *recitation {
 	r := &recitation{jobs: map[surahKey]*dlJob{}, counts: map[surahKey]int{}, open: openMP3}
 	if dataDir != "" {
 		r.dir = filepath.Join(dataDir, "audio")
+		r.cache = filepath.Join(dataDir, "audio-cache")
+		pruneOlder(r.cache, time.Now().Add(-maxCacheAge))
 	}
 	return r
 }
 
+// path is where a verse the user downloaded is kept, until they delete it.
 func (r *recitation) path(reciter, surah, verse int) string {
 	return filepath.Join(r.dir, fmt.Sprint(reciter), fmt.Sprintf("%03d%03d.mp3", surah, verse))
+}
+
+// cachePath is where a verse played without being downloaded is kept, for
+// a week at most, as Quran Foundation's terms allow: recitations are kept
+// for longer only when the user chose to download them.
+func (r *recitation) cachePath(reciter, surah, verse int) string {
+	return filepath.Join(r.cache, fmt.Sprint(reciter), fmt.Sprintf("%03d%03d.mp3", surah, verse))
+}
+
+// source is the file a verse plays from: the one downloaded, or one in the
+// cache, younger than a week; "" when neither.
+func (r *recitation) source(reciter, surah, verse int) string {
+	if r.has(reciter, surah, verse) {
+		return r.path(reciter, surah, verse)
+	}
+	if r.cache == "" {
+		return ""
+	}
+	p := r.cachePath(reciter, surah, verse)
+	if fi, err := os.Stat(p); err == nil && time.Since(fi.ModTime()) < maxCacheAge {
+		return p
+	}
+	return ""
 }
 
 func (r *recitation) has(reciter, surah, verse int) bool {
@@ -194,7 +222,7 @@ func (a *app) downloadSurah(reciter int, s *Surah) {
 	}
 	job.done = job.total - len(missing)
 	a.background(func() func() {
-		err := a.fetchVerses(ctx, reciter, s.ID, missing, func() {
+		err := a.fetchVerses(ctx, reciter, s.ID, missing, a.rec.path, func() {
 			a.post(func() { job.done++ })
 		})
 		return func() {
@@ -209,9 +237,9 @@ func (a *app) downloadSurah(reciter int, s *Surah) {
 	})
 }
 
-// fetchVerses downloads verses of a surah, four at a time, calling done
-// after each.
-func (a *app) fetchVerses(ctx context.Context, reciter, surah int, verses []int, done func()) error {
+// fetchVerses downloads verses of a surah to where to says, four at a
+// time, calling done after each.
+func (a *app) fetchVerses(ctx context.Context, reciter, surah int, verses []int, to func(reciter, surah, verse int) string, done func()) error {
 	if len(verses) == 0 {
 		return nil
 	}
@@ -219,7 +247,7 @@ func (a *app) fetchVerses(ctx context.Context, reciter, surah int, verses []int,
 	if err != nil {
 		return err
 	}
-	if err := os.MkdirAll(filepath.Dir(a.rec.path(reciter, surah, 1)), 0o755); err != nil {
+	if err := os.MkdirAll(filepath.Dir(to(reciter, surah, 1)), 0o755); err != nil {
 		return err
 	}
 	work := make(chan int)
@@ -234,7 +262,7 @@ func (a *app) fetchVerses(ctx context.Context, reciter, surah int, verses []int,
 				url, ok := urls[v]
 				err := fmt.Errorf("no recitation of %d:%d", surah, v)
 				if ok {
-					err = a.download(ctx, url, a.rec.path(reciter, surah, v))
+					err = a.download(ctx, url, to(reciter, surah, v))
 				}
 				if err != nil {
 					mu.Lock()
@@ -353,17 +381,18 @@ func (a *app) startVerse() {
 	pb.paused, pb.err = false, ""
 	a.followPlayback()
 	defer a.syncMedia()
-	if !a.rec.has(pb.reciter, pb.surah, pb.verse) {
+	src := a.rec.source(pb.reciter, pb.surah, pb.verse)
+	if src == "" {
 		if a.rec.dir == "" {
 			pb.err = "no place to keep recitations"
 			return
 		}
+		// Not downloaded: it goes to the cache, for a week at most.
 		pb.loading = true
 		reciter, surah, verse := pb.reciter, pb.surah, pb.verse
 		a.background(func() func() {
-			err := a.fetchVerses(context.Background(), reciter, surah, []int{verse}, func() {})
+			err := a.fetchVerses(context.Background(), reciter, surah, []int{verse}, a.rec.cachePath, func() {})
 			return func() {
-				delete(a.rec.counts, surahKey{reciter, surah})
 				if a.rec.play != pb || a.rec.gen != gen {
 					return // something else plays now
 				}
@@ -378,7 +407,7 @@ func (a *app) startVerse() {
 		return
 	}
 	pb.loading = false
-	snd, err := a.rec.open(a.rec.path(pb.reciter, pb.surah, pb.verse))
+	snd, err := a.rec.open(src)
 	if err != nil {
 		pb.err = err.Error()
 		return
@@ -491,7 +520,7 @@ func (a *app) playing(v *Verse) bool {
 // Texts of the recitations.
 var (
 	txtRecitations  = T{"Recitations", "Murattal"}
-	txtRecIntro     = T{"Choose a reciter. Download surahs to listen offline; a verse not downloaded is fetched as it plays.", "Pilih qari. Unduh surah untuk didengar tanpa internet; ayat yang belum diunduh diambil saat diputar."}
+	txtRecIntro     = T{"Choose a reciter. Download surahs to listen offline, until you delete them; a verse not downloaded is fetched as it plays, and kept a week at most. Recitations: Quran data provided by Quran.Foundation.", "Pilih qari. Unduh surah untuk didengar tanpa internet, sampai kamu menghapusnya; ayat yang belum diunduh diambil saat diputar dan disimpan paling lama seminggu. Murattal: Quran data provided by Quran.Foundation."}
 	txtReciter      = T{"Reciter", "Qari"}
 	txtDownload     = T{"Download", "Unduh"}
 	txtDownloadAll  = T{"Download all", "Unduh semua"}
