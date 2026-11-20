@@ -15,8 +15,12 @@ func (a *app) reader(c *ui.Context) {
 		}
 		return s.Verses[i-1].Key
 	}
+	side := float32(32)
+	if a.phone {
+		side = 12
+	}
 	ui.List(c, &a.verses, len(s.Verses)+1, func(i int) {
-		ui.Row(c).Padding(0, 32).Justify(ui.Center).Children(func() {
+		ui.Row(c).Padding(0, side).Justify(ui.Center).Children(func() {
 			ui.Column(c).Grow(1).MaxWidth(880).Children(func() {
 				if i == 0 {
 					a.surahHeader(c, s)
@@ -30,8 +34,12 @@ func (a *app) reader(c *ui.Context) {
 
 func (a *app) surahHeader(c *ui.Context, s *Surah) {
 	t := c.Theme()
-	ui.Column(c).Padding(32, 0, 16, 0).Gap(6).AlignItems(ui.Center).Children(func() {
-		ui.Text(c, "سورة "+s.Arabic).Font(quranFont).FontSize(40).TextColor(t.Accent)
+	top, title := float32(32), float32(40)
+	if a.phone {
+		top, title = 16, 32
+	}
+	ui.Column(c).Padding(top, 0, 8, 0).Gap(6).AlignItems(ui.Center).Children(func() {
+		ui.Text(c, "سورة "+s.Arabic).Font(quranFont).FontSize(title).TextColor(t.Accent)
 		ui.Textf(c, "%s — %s", s.Name, a.tx(s.Meaning)).FontSize(14).TextColor(t.TextMuted)
 		if s.Bismillah {
 			ui.Box(c).Height(12)
@@ -44,6 +52,9 @@ func (a *app) verse(c *ui.Context, v *Verse) {
 	t := c.Theme()
 	playing := a.playing(v)
 	col := ui.Column(c).Padding(20, 16).Gap(12)
+	if a.phone {
+		col.Padding(12, 4).Gap(6)
+	}
 	if playing {
 		// The verse recited: a frame in the accent, with what plays.
 		col.Margin(6, 0).Radius(14).Background(t.Accent.Alpha(0.06)).Border(1, t.Accent.Alpha(0.45))
@@ -97,7 +108,7 @@ func (a *app) verse(c *ui.Context, v *Verse) {
 func (a *app) arabic(c *ui.Context, segs []Segment, number int) ui.Element {
 	f := quranFonts[a.set.Font]
 	size := float32(a.set.Size) * f.Scale
-	return ui.RichText(c).Font(f.Family).FontSize(size).LineHeight(float32(a.set.LineSpacing)).TextAlign(ui.Start).Children(func() {
+	return ui.RichText(c).Font(f.Family).FontSize(size).LineHeight(a.lineHeight()).TextAlign(ui.Start).Children(func() {
 		a.segments(c, segs)
 		if number > 0 {
 			ui.Text(c, " ")

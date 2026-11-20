@@ -339,3 +339,14 @@ func (a *app) recapCarousel(c *ui.Context, cards []ShareCard, style Paper) {
 		}
 	})
 }
+
+// lineHeight is the Arabic text's line height, as the settings say it. A
+// phone's screen holds few words a line, so the lines sit closer: 2.0 in
+// the settings is 1.7 there.
+func (a *app) lineHeight() float32 {
+	h := float32(a.set.LineSpacing)
+	if a.phone {
+		h = 1 + (h-1)*0.7
+	}
+	return h
+}

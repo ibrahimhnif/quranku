@@ -114,6 +114,14 @@ func TestPhoneScreens(t *testing.T) {
 		tt.Frame()
 	}
 	save("onboarding")
+	a.set.Onboarded = true
+	a.section, a.set.Mode = SectionRead, ModeVerses
+	a.open(a.quran.Surahs[1])
+	for range 3 {
+		tt.Frame()
+	}
+	save("read-baqarah")
+	a.set.Onboarded = false
 	for step := 1; step < onboardSteps; step++ {
 		a.onboardStep = step
 		for range 3 {
