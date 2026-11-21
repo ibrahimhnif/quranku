@@ -15,10 +15,11 @@ developer=${XCODE_DEVELOPER_DIR:-/Applications/Xcode.app/Contents/Developer}
 
 exec env -i \
 	HOME="$HOME" USER="${USER:-}" TERM="${TERM:-xterm-256color}" LANG="${LANG:-en_US.UTF-8}" \
-	PATH="$(dirname "$go"):/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin" \
+	PATH="$(dirname "$go")${JAVA_HOME:+:$JAVA_HOME/bin}:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin" \
 	GOPATH="$gopath" GOTOOLCHAIN=local \
 	DEVELOPER_DIR="$developer" \
 	${ANDROID_HOME:+ANDROID_HOME="$ANDROID_HOME"} \
+	${ANDROID_NDK_HOME:+ANDROID_NDK_HOME="$ANDROID_NDK_HOME"} \
 	${JAVA_HOME:+JAVA_HOME="$JAVA_HOME"} \
 	${GOFLAGS:+GOFLAGS="$GOFLAGS"} \
 	go tool mygo "$@"

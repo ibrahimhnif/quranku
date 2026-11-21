@@ -1,0 +1,26 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.19.0/.schema/devbox.schema.json",
+  "packages": [
+    "go@1.27",
+    "jdk17@latest",
+    "path:./devbox.d/android#android-sdk"
+  ],
+  "shell": {
+    "init_hook": [
+      "export JAVA_HOME=\"$(java -XshowSettings:properties -version 2>&1 | sed -n 's/^ *java.home = //p')\"",
+      "export ANDROID_HOME=\"$DEVBOX_PACKAGES_DIR/libexec/android-sdk\"",
+      "export ANDROID_SDK_ROOT=\"$ANDROID_HOME\"",
+      "export ANDROID_NDK_HOME=\"$(ls -d \"$ANDROID_HOME\"/ndk/* 2>/dev/null | sort -V | tail -1)\"",
+      "export PATH=\"$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools:$PATH\""
+    ],
+    "scripts": {
+      "test": "go test ./...",
+      "desktop": "go tool mygo dev",
+      "emulator": "scripts/android-emulator.sh",
+      "android": "scripts/mygo-mobile.sh dev -platform android",
+      "android:build": "scripts/mygo-mobile.sh build -platform android",
+      "ios": "scripts/mygo-mobile.sh dev -platform ios",
+      "doctor": "scripts/mygo-mobile.sh doctor"
+    }
+  }
+}

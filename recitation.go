@@ -712,39 +712,81 @@ func (a *app) playerBar(c *ui.Context) {
 	}
 	t := c.Theme()
 	s := a.quran.Surahs[pb.surah-1]
-	ui.Row(c).Padding(10, 20).Gap(10).AlignItems(ui.Center).Background(t.Surface).BorderWidth(1, 0, 0, 0).BorderColor(t.Border).Children(func() {
-		if iconButton(c, iconPrev, a.tx(txtPrevVerse)).Clicked() {
+	// The buttons, which grow to share a phone's row.
+	controls := func(grow bool) bool {
+		size := func(e ui.Element) ui.Element {
+			if grow {
+				return e.Grow(1)
+			}
+			return e
+		}
+		if size(iconButton(c, iconPrev, a.tx(txtPrevVerse))).Clicked() {
 			a.stepVerse(-1)
 		}
 		svg, label := iconPause, a.tx(txtPause)
 		if pb.paused {
 			svg, label = iconPlay, a.tx(txtResume)
 		}
-		if ui.PrimaryButton(c, "").Label(label).Tooltip(label).Width(44).Children(func() { ui.Icon(c, svg) }).Clicked() {
+		play := ui.PrimaryButton(c, "").Label(label).Tooltip(label).Children(func() { ui.Icon(c, svg) })
+		if grow {
+			play.Grow(1)
+		} else {
+			play.Width(44)
+		}
+		if play.Clicked() {
 			a.togglePause()
 		}
-		if iconButton(c, iconNext, a.tx(txtNextVerse)).Clicked() {
+		if size(iconButton(c, iconNext, a.tx(txtNextVerse))).Clicked() {
 			a.stepVerse(1)
 		}
-		if iconButton(c, iconStop, a.tx(txtStop)).Clicked() {
+		if size(iconButton(c, iconStop, a.tx(txtStop))).Clicked() {
 			a.stopPlayback()
+			return false
+		}
+		return true
+	}
+	if a.phone {
+		// Two rows: what plays and how it repeats, then the buttons,
+		// as one row is narrower than all of them.
+		ui.Column(c).Padding(8, 12).Gap(8).Background(t.Surface).BorderWidth(1, 0, 0, 0).BorderColor(t.Border).Children(func() {
+			ui.Row(c).Gap(10).AlignItems(ui.Center).Children(func() {
+				a.nowPlaying(c, s, pb)
+				// One button steps through the modes.
+				modes := []string{a.tx(txtRepeatOff), a.tx(txtRepeatVerse), a.tx(txtRepeatSurah)}
+				m := min(max(a.set.Repeat, RepeatOff), RepeatSurah)
+				if labeledButton(c, iconRepeat, modes[m-RepeatOff], a.set.Repeat != RepeatOff).Tooltip(a.tx(txtRepeat)).Clicked() {
+					a.set.Repeat = RepeatOff + (m-RepeatOff+1)%len(modes)
+				}
+			})
+			ui.Row(c).Gap(8).Children(func() { controls(true) })
+		})
+		return
+	}
+	ui.Row(c).Padding(10, 20).Gap(10).AlignItems(ui.Center).Background(t.Surface).BorderWidth(1, 0, 0, 0).BorderColor(t.Border).Children(func() {
+		if !controls(false) {
 			return
 		}
-		ui.Column(c).Grow(1).Gap(2).Children(func() {
-			ui.Textf(c, "%s %d:%d", s.Name, s.ID, pb.verse).FontSize(14).Bold()
-			status := reciterByID(pb.reciter).label()
-			switch {
-			case pb.err != "":
-				status = pb.err
-			case pb.loading:
-				status = a.tx(txtLoading)
-			}
-			st := ui.Text(c, status).FontSize(12).TextColor(t.TextMuted).SingleLine()
-			if pb.err != "" {
-				st.TextColor(t.Danger)
-			}
-		})
+		a.nowPlaying(c, s, pb)
 		ui.Icon(c, iconRepeat).FontSize(14).TextColor(t.TextMuted).Label(a.tx(txtRepeat))
 		ui.Segmented(c, &a.set.Repeat, a.tx(txtRepeatOff), a.tx(txtRepeatVerse), a.tx(txtRepeatSurah)).Label(a.tx(txtRepeat))
+	})
+}
+
+// nowPlaying names the verse playing, and its reciter or what holds it up.
+func (a *app) nowPlaying(c *ui.Context, s *Surah, pb *playback) {
+	t := c.Theme()
+	ui.Column(c).Grow(1).Gap(2).Children(func() {
+		ui.Textf(c, "%s %d:%d", s.Name, s.ID, pb.verse).FontSize(14).Bold()
+		status := reciterByID(pb.reciter).label()
+		switch {
+		case pb.err != "":
+			status = pb.err
+		case pb.loading:
+			status = a.tx(txtLoading)
+		}
+		st := ui.Text(c, status).FontSize(12).TextColor(t.TextMuted).SingleLine()
+		if pb.err != "" {
+			st.TextColor(t.Danger)
+		}
 	})
 }

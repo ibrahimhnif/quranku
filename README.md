@@ -92,7 +92,9 @@ go test ./...         # the tests (run on macOS in CI)
 go tool mygo build    # package the app into build/
 ```
 
-With [devbox](https://www.jetify.com/devbox), `devbox shell` provides Go.
+With [devbox](https://www.jetify.com/devbox), `devbox shell` provides Go,
+a JDK and Android's SDK, NDK and emulator (from nixpkgs, in
+`devbox.d/android`; the first `devbox shell` downloads a few GB).
 
 ### Phones and tablets (in progress)
 
@@ -103,16 +105,25 @@ tablet gets the desktop's layout, with a rail of sections when upright
 Mushaf's pages turn with a finger and cards go to the system's share sheet.
 
 ```sh
+devbox run emulator          # start an Android phone emulator (`devbox run emulator tablet` for a tablet)
+devbox run android           # run on it, rebuilding as the code changes
+devbox run android:build     # the APK and AAB, into build/android
+devbox run ios               # the iOS simulator (needs Xcode)
+devbox run doctor            # check the SDKs, Xcode and the emulators
 QURANKU_PHONE=1 go tool mygo dev           # the phone's layout, on the desktop
 QURANKU_TABLET=1 go tool mygo dev          # a tablet's, in a window to resize
-scripts/mygo-mobile.sh dev -platform ios      # the iOS simulator (needs Xcode)
-scripts/mygo-mobile.sh dev -platform android  # an emulator or device (needs Android Studio and its NDK)
 QURANKU_SHOTS=/tmp go test -run 'TestPhoneScreens|TestTabletScreens'   # screenshots of each screen
 ```
 
-`scripts/mygo-mobile.sh` runs the MyGo CLI with Xcode's toolchain: inside
-`devbox shell`, C compiles with Nix's clang and macOS SDK, which can't build
-for iOS.
+The phone scripts run the MyGo CLI through `scripts/mygo-mobile.sh`, with
+Xcode's toolchain: inside `devbox shell`, C compiles with Nix's clang and
+macOS SDK, which can't build for iOS. Without devbox, Android Studio's SDK
+and NDK work too.
+
+Quranku builds with a fork of MyGo (the `replace` in `go.mod`) until
+[its fix for Arabic on Android](https://github.com/ibrahimhnif/mygo/tree/fix/android-arabic-context)
+is upstream: a word whose tajweed colors change was shaped piece by piece,
+which broke its letters apart.
 
 On first run Quranku asks five quick questions (language, reading style,
 look, reciter, daily goal); everything can be changed later in Settings.

@@ -21,3 +21,6 @@ mygo_windows_*.syso
 # Design tooling scratch
 .impeccable/questions/
 .impeccable/mocks/
+
+# devbox
+.devbox/
